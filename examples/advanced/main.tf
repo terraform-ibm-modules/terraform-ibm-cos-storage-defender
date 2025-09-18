@@ -1,16 +1,4 @@
 ########################################################################################################################
-# Resource group
-########################################################################################################################
-
-module "resource_group" {
-  source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.2.0"
-  # if an existing resource group is not set (null) create a new one using prefix
-  resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
-  existing_resource_group_name = var.resource_group
-}
-
-########################################################################################################################
 # COS
 ########################################################################################################################
 
@@ -20,13 +8,31 @@ module "resource_group" {
 #   - Include the actual module source as a code comment like below so consumers know how to consume from correct location
 #
 
-module "cos" {
+module "cyber_vault" {
   source = "../.."
-  # remove the above line and uncomment the below 2 lines to consume the module from the registry
-  # source            = "terraform-ibm-modules/<replace>/ibm"
-  # version           = "X.Y.Z" # Replace "X.Y.Z" with a release version to lock into a specific release
-  name              = "${var.prefix}-cos"
-  resource_group_id = module.resource_group.resource_group_id
-  resource_tags     = var.resource_tags
-  plan              = "cos-one-rate-plan"
+
+  # common variables
+  existing_resource_group_name = var.resource_group
+  ibmcloud_api_key             = var.ibmcloud_api_key
+  prefix                       = var.prefix
+
+  # cos instance related variables  
+  cos_instance_name = "cos-cybervault"
+
+  # KMS instance related variables  
+  key_protect_name = "keyprotect"
+
+  # bucket related variables.
+  bucket_storage_class   = var.bucket_storage_class
+  bucket_name            = "cybervault-bucket"
+  object_locking_enabled = var.object_locking_enabled
+
+  # Cloud logs variables
+  cloud_log_instance_name = "icl-cyber"
+
+  # CBR related variables
+  allowed_vpc               = var.allowed_vpc
+  allowed_vpc_crns          = var.allowed_vpc_crns
+  allowed_ip_addresses      = var.allowed_ip_addresses
+  allowed_network_zone_name = var.allowed_network_zone_name
 }

@@ -1,0 +1,18 @@
+terraform {
+  required_version = ">= 1.9.0"
+  required_providers {
+    # Use "greater than or equal to" range in modules
+    ibm = {
+      source  = "IBM-Cloud/ibm"
+      version = "1.82.1"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = "0.13.1"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.7.2"
+    }
+  }
+}

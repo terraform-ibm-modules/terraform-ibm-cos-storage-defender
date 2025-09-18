@@ -1,38 +1,28 @@
-##############################################################################
-# Outputs
-##############################################################################
+# ##############################################################################
+# # Outputs
+# ##############################################################################
 
-#
-# Developer tips:
-#   - Include all relevant outputs from the modules being called in the example
-#
+# #
+# # Developer tips:
+# #   - Include all relevant outputs from the modules being called in the example
+# #
 
-output "account_id" {
-  description = "An alpha-numeric value identifying the account ID."
-  value       = module.cos.account_id
+output "cos_instance_id" {
+  value       = module.cyber_vault.cos_instance_id
+  description = "The ID of the COS instance."
 }
 
-output "guid" {
-  description = "The GUID of the resource instance."
-  value       = module.cos.account_id
+output "credentials_json" {
+  value       = module.cyber_vault.credentials_json
+  description = "The HMAC credentials JSON for the COS instance."
+  sensitive   = true
 }
 
-output "id" {
-  description = "The unique identifier of the resource instance."
-  value       = module.cos.id
+output "bucket_name" {
+  value = module.cyber_vault.bucket_name
 }
 
-output "crn" {
-  description = "The CRN of the resource instance."
-  value       = module.cos.crn
-}
-
-output "resource_group_name" {
-  description = "Resource group name."
-  value       = module.resource_group.resource_group_name
-}
-
-output "resource_group_id" {
-  description = "Resource group ID."
-  value       = module.resource_group.resource_group_id
+output "cos_bucket_endpoint" {
+  value       = module.cyber_vault.cos_bucket_endpoint
+  description = "The direct endpoint of the COS bucket."
 }

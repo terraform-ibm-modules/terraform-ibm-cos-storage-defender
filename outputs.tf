@@ -9,22 +9,22 @@
 #   - Use variable validation when possible
 #
 
-output "account_id" {
-  description = "An alpha-numeric value identifying the account ID."
-  value       = ibm_resource_instance.cos_instance.account_id
+output "cos_instance_id" {
+  value       = module.cos.cos_instance_id
+  description = "The ID of the COS instance."
 }
 
-output "guid" {
-  description = "The GUID of the resource instance."
-  value       = ibm_resource_instance.cos_instance.guid
+output "credentials_json" {
+  value       = module.cos.hmac_credentials
+  description = "The HMAC credentials JSON for the COS instance."
+  sensitive   = true
 }
 
-output "id" {
-  description = "The unique identifier of the resource instance."
-  value       = ibm_resource_instance.cos_instance.id
+output "bucket_name" {
+  value = module.cos_bucket.cos_bucket_name
 }
 
-output "crn" {
-  description = "The CRN of the resource instance."
-  value       = ibm_resource_instance.cos_instance.crn
+output "cos_bucket_endpoint" {
+  value       = module.cos_bucket.cos_bucket_direct_endpoint
+  description = "The direct endpoint of the COS bucket."
 }
