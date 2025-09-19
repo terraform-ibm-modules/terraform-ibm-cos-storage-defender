@@ -29,13 +29,7 @@ variable "prefix" {
 variable "resource_group" {
   type        = string
   description = "The name of an existing resource group to provision resources in to. If not set a new resource group will be created using the prefix variable."
-  default     = null
-}
-
-variable "resource_tags" {
-  type        = list(string)
-  description = "List of resource tag to associate with all resource instances created by this example."
-  default     = []
+  default     = "Default"
 }
 
 variable "bucket_storage_class" {

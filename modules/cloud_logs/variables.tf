@@ -22,12 +22,6 @@ variable "plan" {
   }
 }
 
-variable "resource_tags" {
-  description = "A list of tags to assign to the Cloud Logs instance."
-  type        = list(string)
-  default     = []
-}
-
 variable "region" {
   description = "Region where the Cloud Logs instance will be created."
   type        = string

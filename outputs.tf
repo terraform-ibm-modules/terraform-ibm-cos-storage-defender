@@ -21,7 +21,8 @@ output "credentials_json" {
 }
 
 output "bucket_name" {
-  value = module.cos_bucket.cos_bucket_name
+  description = "The name of the COS bucket."
+  value       = module.cos_bucket.cos_bucket_name
 }
 
 output "cos_bucket_endpoint" {

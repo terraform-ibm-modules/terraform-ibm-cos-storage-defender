@@ -16,10 +16,10 @@ module "cyber_vault" {
   ibmcloud_api_key             = var.ibmcloud_api_key
   prefix                       = var.prefix
 
-  # cos instance related variables  
+  # cos instance related variables
   cos_instance_name = "cos-cybervault"
 
-  # KMS instance related variables  
+  # KMS instance related variables
   key_protect_name = "keyprotect"
 
   # bucket related variables.

@@ -1,9 +1,3 @@
-variable "ibmcloud_api_key" {
-  type        = string
-  description = "The IBM Cloud platform API key to deploy resources."
-  sensitive   = true
-}
-
 variable "cos_instance_name" {
   description = "The name for the IBM Cloud Object Storage instance provisioned by this solution. If a value is passed for `prefix`, the instance will be named with the prefix value in the format of `<prefix>-value`."
   type        = string

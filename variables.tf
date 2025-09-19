@@ -64,17 +64,15 @@ variable "role" {
   default     = "Writer"
 }
 
-
-
-variable "plan" {
-  description = "The plan to use when Object Storage instances are created. [Learn more](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-provision)."
-  type        = string
-  default     = "standard"
-  validation {
-    condition     = contains(["standard", "cos-one-rate-plan"], var.plan)
-    error_message = "The specified plan is not a valid selection!"
-  }
-}
+# variable "plan" {
+#   description = "The plan to use when Object Storage instances are created. [Learn more](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-provision)."
+#   type        = string
+#   default     = "standard"
+#   validation {
+#     condition     = contains(["standard", "cos-one-rate-plan"], var.plan)
+#     error_message = "The specified plan is not a valid selection!"
+#   }
+# }
 
 
 ##############################################################################
@@ -175,7 +173,7 @@ variable "retention_period" {
 }
 
 ##############################################################################
-# CBR rule creation variables 
+# CBR rule creation variables
 ##############################################################################
 
 variable "allowed_vpc" {
@@ -199,7 +197,7 @@ variable "allowed_ip_addresses" {
 variable "allowed_network_zone_name" {
   description = "Optional custom name for CBR network zone"
   type        = string
-  default     = ""
+  default     = "cyber-zone"
 }
 
 variable "cos_allowed_endpoint_types" {

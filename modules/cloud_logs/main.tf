@@ -5,7 +5,6 @@ resource "ibm_resource_instance" "cloud_logs" {
   resource_group_id = var.resource_group_id
   service           = "logs"
   plan              = var.plan
-  tags              = var.resource_tags
   location          = var.region
   parameters = {
     "logs_bucket_crn"         = var.data_storage.logs_data.enabled ? var.data_storage.logs_data.bucket_crn : null

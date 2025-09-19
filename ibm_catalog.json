@@ -1,0 +1,473 @@
+{
+    "products": [
+        {
+            "name": "deploy-arch-ibm-cos-storage-defender",
+            "label": "Cloud Object Storage Cyber Vault for Storage Defender",
+            "product_kind": "solution",
+            "tags": [
+                "storage",
+                "ibm_created"
+            ],
+            "keywords": [
+                "terraform",
+                "cos",
+                "object storage",
+                "bucket",
+                "storage",
+                "solution",
+                "IaC",
+                "infrastructure as code"
+            ],
+            "short_description": "Create a customizable Cyber Vault bucket with configurations for a secure, isolated environment for storing and protecting data.",
+            "long_description": "This architecture utilizes object storage for immutable and indelible backup copies, offering strong protection against cyberattacks and ransomware. It involves restricting access to the vault data and making it resistant to threats affecting the primary system. ",
+            "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-cos/blob/main/README.md",
+            "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos/main/images/cos_icon.svg",
+            "features": [
+                {
+                    "title": "Cloud Object Storage instance",
+                    "description": "Create and configures an IBM Cloud Object Storage instance."
+                },
+                {
+                    "title": "Cloud Object Storage bucket",
+                    "description": "Supports both cross-regional and regional bucket creation and configuration."
+                },
+                {
+                    "title": "Data encryption",
+                    "description": "Encrypt your data using the default encryption model or use IBM Key Protect or IBM Hyper Protect Crypto Services for full control over the data encryption keys used. [Learn more](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-encryption)."
+                },
+                {
+                    "title": "Service credentials",
+                    "description": "Optionally create and configure Object Storage service credentials for your instance. Optionally choose to [configure IBM Cloud® Secrets Manager to manage the service credentials](https://cloud.ibm.com/docs/secrets-manager?topic=secrets-manager-service-credentials\u0026interface=terraform)."
+                },
+                {
+                    "title": "Context-based restrictions",
+                    "description": "Optionally create and configure [Context-based restrictions](https://cloud.ibm.com/docs/account?topic=account-context-restrictions-whatis) for both instance and buckets."
+                }
+            ],
+            "flavors": [
+                {
+                    "label": "Fully configurable",
+                    "name": "fully-configurable",
+                    "index": 1,
+                    "install_type": "fullstack",
+                    "compliance": {
+                        "authority": "scc-v3",
+                        "profiles": [
+                            {
+                                "profile_name": "IBM Cloud Framework for Financial Services",
+                                "profile_version": "1.7.0"
+                            }
+                        ]
+                    },
+                    "architecture": {
+                        "features": [
+                            {
+                                "title": "Cloud Object Storage instance",
+                                "description": "Create and configures an IBM Cloud Object Storage instance."
+                            },
+                            {
+                                "title": "Service credentials",
+                                "description": "Create and configure Object Storage service credentials for your instance. Optionally choose to configure IBM Cloud® Secrets Manager to manage the service credentials."
+                            },
+                            {
+                                "title": "Context-based restrictions",
+                                "description": "Optionally create and configure context-based restrictions."
+                            }
+                        ],
+                        "diagrams": [
+                            {
+                                "diagram": {
+                                    "url": "https://raw.githubusercontent.com/DhruvBavadiya/defender-asset/refs/heads/main/COS%20Cyber%20Vault%20DA%20(2).svg",
+                                    "caption": "Cloud Object Storage Cyber Vault for Storage Defender",
+                                    "type": "image/svg+xml"
+                                },
+                                "description": "This automation solution is designed for the implementation of Cyber Vault solution that uses IBM Cloud Object Storage."
+                            }
+                        ]
+                    },
+                    "configuration": [
+                        {
+                            "key": "ibmcloud_api_key",
+                            "type": "password",
+                            "description": "The IBM Cloud platform API key to deploy resources.",
+                            "required": true,
+                            "virtual": false
+                        },
+                        {
+                            "key": "prefix",
+                            "required": true,
+                            "description": "The prefix to be added to the default name of resources created by this solution. To skip using a prefix, set this value to null or an empty string. The prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens ('-'). It should not exceed 16 characters, must not end with a hyphen ('-'), and cannot contain consecutive hyphens ('--'). Example: prod-us-south."
+                        },
+                        {
+                            "key": "region",
+                            "required": true,
+                            "options": [
+                                {
+                                    "displayname": "Osaka (jp-osa)",
+                                    "value": "jp-osa"
+                                },
+                                {
+                                    "displayname": "Tokyo (jp-tok)",
+                                    "value": "jp-tok"
+                                },
+                                {
+                                    "displayname": "Frankfurt (eu-de)",
+                                    "value": "eu-de"
+                                },
+                                {
+                                    "displayname": "London (eu-gb)",
+                                    "value": "eu-gb"
+                                },
+                                {
+                                    "displayname": "Madrid (eu-es)",
+                                    "value": "eu-es"
+                                },
+                                {
+                                    "displayname": "Dallas (us-south)",
+                                    "value": "us-south"
+                                },
+                                {
+                                    "displayname": "Montreal (ca-mon)",
+                                    "value": "ca-mon"
+                                },
+                                {
+                                    "displayname": "Toronto (ca-tor)",
+                                    "value": "ca-tor"
+                                },
+                                {
+                                    "displayname": "Washington (us-east)",
+                                    "value": "us-east"
+                                },
+                                {
+                                    "displayname": "Sao Paulo (br-sao)",
+                                    "value": "br-sao"
+                                }
+                            ]
+                        },
+                        {
+                            "key": "existing_resource_group_name",
+                            "type": "string",
+                            "default_value": "Default",
+                            "description": "The name of an existing resource group to provision the resources.",
+                            "display_name": "resource_group",
+                            "required": false,
+                            "custom_config": {
+                                "type": "resource_group",
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "config_constraints": {
+                                    "identifier": "rg_name"
+                                }
+                            },
+                            "virtual": false
+                        },
+                        {
+                            "key": "cos_instance_name",
+                            "type": "string",
+                            "default_value": "cos-cybervault",
+                            "display_name": "cos_instance_name",
+                            "description": "The name for the IBM Cloud Object Storage instance provisioned by this solution. A default name has been provided. The instance will be named with the prefix plus this value in the format <prefix>-value.",
+                            "required": false,
+                            "virtual": false
+                        },
+                        {
+                            "key": "bucket_name",
+                            "type": "string",
+                            "display_name": "cos_bucket_name",
+                            "description": "The name for the IBM Cloud Object Storage bucket provisioned by this solution. A default name has been provided. The instance will be named with the prefix plus this value in the format <prefix>-value. The bucket namewill also be appended with a randomly generated string of unique characters.",
+                            "required": false,
+                            "virtual": false
+                        },
+                        {
+                            "key": "bucket_storage_class",
+                            "type": "string",
+                            "default_value": "smart",
+                            "display_name": "cos_bucket_storage_class",
+                            "description": "The storage class for the COS bucket",
+                            "required": false,
+                            "virtual": false,
+                            "options": [
+                                {
+                                    "displayname": "Standard",
+                                    "value": "standard"
+                                },
+                                {
+                                    "displayname": "Vault",
+                                    "value": "vault"
+                                },
+                                {
+                                    "displayname": "Cold",
+                                    "value": "cold"
+                                },
+                                {
+                                    "displayname": "Smart Tier",
+                                    "value": "smart"
+                                },
+                                {
+                                    "displayname": "One Rate",
+                                    "value": "onerate_active"
+                                }
+                            ]
+                        },
+                        {
+                            "key": "object_locking_enabled",
+                            "type": "boolean",
+                            "default_value": false,
+                            "description": "Enable object locking on the bucket.",
+                            "required": false,
+                            "virtual": false
+                        },
+                        {
+                            "key": "key_protect_name",
+                            "type": "string",
+                            "default_value": "",
+                            "display_name": "kms_instance_name",
+                            "description": "The Name of the KMS instance. used to manage the root key to encrypt data stored in COS.",
+                            "required": false,
+                            "virtual": false
+                        },
+                        {
+                            "key": "cloud_log_instance_name",
+                            "type": "string",
+                            "default_value": "",
+                            "display_name": "cloud_log_instance_name",
+                            "description": "The Name of the Cloud logs instance.",
+                            "required": false,
+                            "virtual": false
+                        },
+                        {
+                            "key": "allowed_vpc_crns",
+                            "type": "string",
+                            "default_value": "",
+                            "description": "Comma-separated list of allowed VPC CRNs. This will restrict access to the bucket from only specifically allowed VPC CRNs.  Entering values in this field will result in the creation of a new network zone.",
+                            "required": false,
+                            "virtual": false,
+                            "custom_config": {
+                                "type": "textarea",
+                                "grouping": "deployment",
+                                "original_grouping": "deployment"
+                            }
+                        },
+                        {
+                            "key": "allowed_vpc",
+                            "type": "string",
+                            "description": "List of allowed VPCs. This will restrict access to the bucket from only specifically allowed VPCs.  Entering values in this field will result in the creation of a new network zone.",
+                            "required": false,
+                            "default_value": "__NOT_SET__",
+                            "custom_config": {
+                                "type": "vpc",
+                                "grouping": "deployment",
+                                "original_grouping": "deployment"
+                            },
+                            "virtual": false
+                        },
+                        {
+                            "key": "allowed_ip_addresses",
+                            "type": "string",
+                            "default_value": "",
+                            "description": "List of allowed IP addresses. This will restrict access to the bucket from only specifically allowed IP addresses.  Entering values in this field will result in the creation of a new network zone.",
+                            "required": false,
+                            "virtual": false,
+                            "custom_config": {
+                                "type": "textarea",
+                                "grouping": "deployment",
+                                "original_grouping": "deployment"
+                            }
+                        },
+                        {
+                            "key": "allowed_network_zone_name",
+                            "type": "string",
+                            "default_value": "",
+                            "description": "Name used for new network zone created if values are entered in the allowed_ip_addresses, allowed_vpc, or allowed_vpc_crns fields",
+                            "required": false,
+                            "virtual": false
+                        },
+                        {
+                            "key": "cos_allowed_endpoint_types",
+                            "type": "string",
+                            "default_value": "all",
+                            "description": "Restrict access to the COS bucket through specific endpoint types. By specifying a value here, access to the bucket will be restricted to that endpoint type. Public endpoints are used for traffic originating from outside IBM Cloud. Private endpoints are used for traffic coming from other parts ofIBM Cloud, excluding VPCs. Direct endpoints are used for traffic coming from customer VPCs.",
+                            "required": false,
+                            "virtual": false,
+                            "options": [
+                                {
+                                    "displayname": "Private",
+                                    "value": "private"
+                                },
+                                {
+                                    "displayname": "Public",
+                                    "value": "public"
+                                },
+                                {
+                                    "displayname": "All",
+                                    "value": "all"
+                                }
+                            ]
+                        },
+                        {
+                            "key": "role",
+                            "type": "string",
+                            "default_value": "Writer",
+                            "display_name": "cos_role_for_defender",
+                            "description": "This is the role that will be granted to the service credential used by Defender when making requests to COS. The Writer role has been selected by default since it contains the minimum set of permissions needed by Defender.",
+                            "required": false,
+                            "options": [
+                                {
+                                    "displayname": "NONE",
+                                    "value": "NONE"
+                                },
+                                {
+                                    "displayname": "Writer",
+                                    "value": "Writer"
+                                },
+                                {
+                                    "displayname": "Reader",
+                                    "value": "Reader"
+                                },
+                                {
+                                    "displayname": "Manager",
+                                    "value": "Manager"
+                                },
+                                {
+                                    "displayname": "Administrator",
+                                    "value": "Administrator"
+                                },
+                                {
+                                    "displayname": "Operator",
+                                    "value": "Operator"
+                                },
+                                {
+                                    "displayname": "Viewer",
+                                    "value": "Viewer"
+                                },
+                                {
+                                    "displayname": "Editor",
+                                    "value": "Editor"
+                                }
+                            ],
+                            "virtual": false
+                        },
+                        {
+                            "key": "cloud_logs_bucket_endpoint",
+                            "type": "string",
+                            "default_value": "public",
+                            "description": "The type of endpoint for the IBM terraform provider to manage the bucket.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "cloud_logs_endpoint",
+                            "type": "string",
+                            "default_value": "public-and-private",
+                            "description": "Service endpoint type for the Cloud Logs instance.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "kp_plan",
+                            "type": "string",
+                            "default_value": "tiered-pricing",
+                            "description": "Plan for the Key Protect instance.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "logs_bucket_name",
+                            "type": "string",
+                            "default_value": "icl-logs-bucket",
+                            "description": "The name for the Cloud Logs bucket.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "metrics_bucket_name",
+                            "type": "string",
+                            "default_value": "icl-metrics-bucket",
+                            "description": "The name for the Cloud Metrics bucket.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "retention_period",
+                            "type": "number",
+                            "default_value": 7,
+                            "description": "Retention period (in days) for logs and metrics stored in Cloud Logs.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "key": "cos_instance_id",
+                            "description": "COS instance id"
+                        },
+                        {
+                            "key": "credentials_json",
+                            "description": "HMAC credentials"
+                        },
+                        {
+                            "key": "hmac_key_id",
+                            "description": "HMAC credential id"
+                        },
+                        {
+                            "key": "cos_bucket_name",
+                            "description": "Cos Bucket Name."
+                        },
+                        {
+                            "key": "cos_private_endpoint",
+                            "description": "Private endpoint of cos instance."
+                        },
+                        {
+                            "key": "cos_public_endpoint",
+                            "description": "Public endpoint of cos instance."
+                        },
+                        {
+                            "key": "cos_direct_endpoint",
+                            "description": "Direct endpoint of cos instance."
+                        }
+                    ],
+                    "iam_permissions": [
+                        {
+                            "service_name": "is.vpc",
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::role:Administrator",
+                                "crn:v1:bluemix:public:iam::::role:Editor"
+                            ]
+                        },
+                        {
+                            "service_name": "cloud-object-storage",
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::role:Writer",
+                                "crn:v1:bluemix:public:iam::::role:Reader"
+                            ]
+                        },
+                        {
+                            "service_name": "kms",
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
+                            ]
+                        },
+                        {
+                            "service_name": "logs",
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::role:Writer"
+                            ]
+                        }
+                    ],
+                    "licenses": [
+                        {
+                            "name": "License name",
+                            "smref": "Link to the license"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

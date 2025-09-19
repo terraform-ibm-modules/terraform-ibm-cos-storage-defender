@@ -19,7 +19,8 @@ output "credentials_json" {
 }
 
 output "bucket_name" {
-  value = module.cyber_vault.bucket_name
+  value       = module.cyber_vault.bucket_name
+  description = "The name of Cos bucket"
 }
 
 output "cos_bucket_endpoint" {

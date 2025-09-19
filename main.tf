@@ -19,7 +19,6 @@ locals {
 # Create Cos Instance
 module "cos" {
   source            = "./modules/cos"
-  ibmcloud_api_key  = var.ibmcloud_api_key
   cos_instance_name = local.cos_instance_name
   cos_plan          = local.cos_plan
   resource_group_id = data.ibm_resource_group.existing_resource_group.id
@@ -94,7 +93,6 @@ locals {
   bucket_name = "${local.safe_prefix}${local.effective_bucket_name}-${random_id.bucket_suffix.hex}"
 
   # based on region set region location for resiliancy
-  region                 = var.region
   cross_region_location  = null
   single_site_location   = null
   kms_encryption_enabled = true
@@ -238,6 +236,9 @@ data "ibm_is_vpc" "single_vpc" {
 locals {
   allowed_vpc_list = length(data.ibm_is_vpc.single_vpc) > 0 ? [data.ibm_is_vpc.single_vpc[0].crn] : []
   use_custom_zone  = length(local.allowed_vpc_list) > 0 || length(local.allowed_vpc_crns_list) > 0 || length(local.allowed_ip_addresses_list) > 0
+  allowed_network_zone_name = (
+    var.allowed_network_zone_name != "" ? var.allowed_network_zone_name : "cyber-zone"
+  )
 }
 
 ##############################################################################
@@ -247,7 +248,7 @@ locals {
 module "cbr_zone" {
   source     = "./modules/cbr-zone-module"
   count      = local.use_custom_zone ? 1 : 0
-  name       = "${local.safe_prefix}cbr-zone"
+  name       = "${local.safe_prefix}${local.allowed_network_zone_name}"
   account_id = local.account_id
 
   addresses = concat(
@@ -263,6 +264,7 @@ module "cbr_zone" {
 # Final context attributes for the rule
 ##############################################################################
 locals {
+  create_cbr_rule = !(var.allowed_vpc == "-" || var.allowed_vpc == "") || var.allowed_vpc_crns != "" || var.allowed_ip_addresses != ""
   context_attributes = concat(
     local.endpoint_context,
     local.use_custom_zone ? [
@@ -294,7 +296,7 @@ locals {
 ##############################################################################
 module "cbr_rule" {
   source           = "./modules/cbr-rule-module"
-  count            = length(local.context_attributes) > 0 ? 1 : 0
+  count            = local.create_cbr_rule ? 1 : 0
   rule_description = "CBR rule for COS"
   enforcement_mode = "enabled"
 
@@ -316,4 +318,3 @@ module "cbr_rule" {
     module.kms
   ]
 }
-
