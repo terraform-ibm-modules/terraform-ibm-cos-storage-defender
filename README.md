@@ -30,6 +30,7 @@ TODO: Replace this with a description of the modules in this repo.
 * [Submodules](./modules)
 * [Examples](./examples)
     * [Advanced example](./examples/advanced)
+    * [Advanced example](./examples/basic)
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
