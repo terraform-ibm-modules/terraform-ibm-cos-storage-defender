@@ -74,6 +74,11 @@ variable "role" {
 #   }
 # }
 
+variable "cos_location" {
+  description = "The location for the Object Storage instance."
+  type        = string
+  default     = "global"
+}
 
 ##############################################################################
 # KMS instance variables
@@ -99,6 +104,29 @@ variable "kp_plan" {
     condition     = var.kp_plan == "tiered-pricing" ? true : (var.kp_plan == "cross-region-resiliency" && contains(["us-south", "eu-de", "jp-tok"], var.region))
     error_message = "'cross-region-resiliency' is only available for the following regions: 'us-south', 'eu-de', 'jp-tok'."
   }
+}
+
+variable "allowed_network" {
+  type        = string
+  description = "Allowed networks for the Key Protect instance. Possible values: 'private-only', 'public-and-private'."
+  default     = "public-and-private"
+
+  validation {
+    condition     = can(regex("public-and-private|private-only", var.allowed_network))
+    error_message = "Valid values for allowed_network are 'public-and-private' or 'private-only'."
+  }
+}
+
+variable "standard_key" {
+  type        = bool
+  description = "Whether to create a standard key (true) or an imported key (false)."
+  default     = false
+}
+
+variable "endpoint_type" {
+  type        = string
+  description = "The type of endpoint for the KMS key. Options: 'public', 'private'."
+  default     = "public"
 }
 
 ##############################################################################
@@ -128,6 +156,18 @@ variable "object_locking_enabled" {
   default     = false
 }
 
+variable "hard_quota" {
+  type        = number
+  description = "The hard quota (in GB) for the bucket. Set to 0 for unlimited."
+  default     = 1024
+}
+
+variable "force_delete" {
+  type        = bool
+  description = "Whether to force delete the key when deleting the resource."
+  default     = true
+}
+
 ##############################################################################
 # cloud logs variable
 ##############################################################################
@@ -136,16 +176,6 @@ variable "cloud_log_instance_name" {
   type        = string
   description = "The name for the Cloud Logs Instance."
   default     = "Cloud-Logs"
-}
-
-variable "cloud_logs_bucket_endpoint" {
-  description = "The type of endpoint for the IBM terraform provider to manage the bucket. Possible values: `public`, `private`, `direct`."
-  type        = string
-  default     = "public"
-  validation {
-    condition     = contains(["public", "private", "direct"], var.cloud_logs_bucket_endpoint)
-    error_message = "The specified cloud_logs_bucket_endpoint is not a valid selection!"
-  }
 }
 
 variable "cloud_logs_endpoint" {
@@ -170,6 +200,19 @@ variable "retention_period" {
   description = "Retention period (in days) for logs and metrics stored in Cloud Logs."
   type        = number
   default     = 7
+}
+
+variable "icl_plan" {
+  type        = string
+  description = "The IBM Cloud Logs plan to provision. Available: standard"
+  default     = "standard"
+
+  validation {
+    condition = anytrue([
+      var.icl_plan == "standard",
+    ])
+    error_message = "The plan value must be one of the following: standard."
+  }
 }
 
 ##############################################################################
@@ -204,4 +247,10 @@ variable "cos_allowed_endpoint_types" {
   description = "Allowed endpoint types for COS (public, private, all, or empty)"
   type        = string
   default     = "all"
+}
+
+variable "zone_description" {
+  description = "Description of the zone"
+  type        = string
+  default     = "CBR zone created by Terraform"
 }

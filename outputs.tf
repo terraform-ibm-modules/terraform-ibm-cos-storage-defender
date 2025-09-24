@@ -15,17 +15,17 @@ output "cos_instance_id" {
 }
 
 output "credentials_json" {
-  value       = module.cos.hmac_credentials
+  value       = module.cos.resource_keys
   description = "The HMAC credentials JSON for the COS instance."
   sensitive   = true
 }
 
 output "bucket_name" {
-  description = "The name of the COS bucket."
-  value       = module.cos_bucket.cos_bucket_name
+  description = "The name of the created bucket."
+  value       = local.cos_bucket_name
 }
 
 output "cos_bucket_endpoint" {
-  value       = module.cos_bucket.cos_bucket_direct_endpoint
+  value       = module.cos_bucket.buckets[local.bucket_name].s3_endpoint_direct
   description = "The direct endpoint of the COS bucket."
 }

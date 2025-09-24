@@ -348,15 +348,6 @@
                             "virtual": false
                         },
                         {
-                            "key": "cloud_logs_bucket_endpoint",
-                            "type": "string",
-                            "default_value": "public",
-                            "description": "The type of endpoint for the IBM terraform provider to manage the bucket.",
-                            "required": false,
-                            "virtual": false,
-                            "hidden": true
-                        },
-                        {
                             "key": "cloud_logs_endpoint",
                             "type": "string",
                             "default_value": "public-and-private",
@@ -400,6 +391,78 @@
                             "required": false,
                             "virtual": false,
                             "hidden": true
+                        },
+                        {
+                            "key": "allowed_network",
+                            "type": "string",
+                            "default_value": "public-and-private",
+                            "description": "Allowed networks for the Key Protect instance. Possible values: 'private-only', 'public-and-private'.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "cos_location",
+                            "type": "string",
+                            "default_value": "global",
+                            "description": "The location for the Object Storage instance.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "endpoint_type",
+                            "type": "string",
+                            "default_value": "public",
+                            "description": "The type of endpoint for the KMS key. Options: 'public', 'private'.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "force_delete",
+                            "type": "boolean",
+                            "default_value": true,
+                            "description": "Whether to force delete the key when deleting the resource.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "hard_quota",
+                            "type": "number",
+                            "default_value": 1024,
+                            "description": "The hard quota (in GB) for the bucket. Set to 0 for unlimited.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "standard_key",
+                            "type": "boolean",
+                            "default_value": false,
+                            "description": "Whether to create a standard key (true) or an imported key (false).",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "icl_plan",
+                            "type": "string",
+                            "default_value": "standard",
+                            "description": "The IBM Cloud Logs plan to provision. Available: standard.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "zone_description",
+                            "type": "string",
+                            "default_value": "CBR zone created by Terraform",
+                            "description": "Description of the zone",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
                         }
                     ],
                     "outputs": [
@@ -418,14 +481,6 @@
                         {
                             "key": "cos_bucket_name",
                             "description": "Cos Bucket Name."
-                        },
-                        {
-                            "key": "cos_private_endpoint",
-                            "description": "Private endpoint of cos instance."
-                        },
-                        {
-                            "key": "cos_public_endpoint",
-                            "description": "Public endpoint of cos instance."
                         },
                         {
                             "key": "cos_direct_endpoint",
