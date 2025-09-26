@@ -20,8 +20,8 @@
             ],
             "short_description": "Create a customizable Cyber Vault bucket with configurations for a secure, isolated environment for storing and protecting data.",
             "long_description": "This architecture utilizes object storage for immutable and indelible backup copies, offering strong protection against cyberattacks and ransomware. It involves restricting access to the vault data and making it resistant to threats affecting the primary system. ",
-            "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-cos/blob/main/README.md",
-            "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos/main/images/cos_icon.svg",
+            "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/blob/main/README.md",
+            "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/main/images/StorageDefender_dark",
             "features": [
                 {
                     "title": "Cloud Object Storage instance",
@@ -77,7 +77,7 @@
                         "diagrams": [
                             {
                                 "diagram": {
-                                    "url": "https://raw.githubusercontent.com/DhruvBavadiya/defender-asset/refs/heads/main/COS%20Cyber%20Vault%20DA%20(2).svg",
+                                    "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/feature-test-example/reference-architectures/COS%20Defender%20DA%20architectual%20diagram.svg",
                                     "caption": "Cloud Object Storage Cyber Vault for Storage Defender",
                                     "type": "image/svg+xml"
                                 },
@@ -460,6 +460,24 @@
                             "type": "string",
                             "default_value": "CBR zone created by Terraform",
                             "description": "Description of the zone",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "object_lock_duration_years",
+                            "type": "number",
+                            "default_value": 1,
+                            "description": "The number of years for the object lock duration. If you specify a number of years, do not specify a value for `object_lock_duration_days`. Applies only if `create_cos_bucket` is set to `true`.",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "cloud_logs_bucket_class",
+                            "type": "string",
+                            "default_value": "standard",
+                            "description": "The number of years for the object lock duration. If you specify a number of years, do not specify a value for `object_lock_duration_days`. Applies only if `create_cos_bucket` is set to `true`.",
                             "required": false,
                             "virtual": false,
                             "hidden": true

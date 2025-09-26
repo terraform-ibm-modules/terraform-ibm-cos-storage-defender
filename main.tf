@@ -105,18 +105,21 @@ module "cos_bucket" {
   version = "10.2.21"
   bucket_configs = [
     {
-      bucket_name                   = local.bucket_name
-      kms_encryption_enabled        = local.kms_encryption_enabled
-      kms_key_crn                   = local.kms_encryption_enabled ? module.key[0].crn : null
-      region_location               = var.region
-      cross_region_location         = local.cross_region_location
-      single_site_location          = local.single_site_location
-      resource_instance_id          = module.cos.cos_instance_id
-      storage_class                 = var.bucket_storage_class
-      hard_quota                    = var.hard_quota
-      force_delete                  = var.force_delete
-      object_lock                   = var.object_locking_enabled ? true : null
-      object_versioning_enabled     = var.object_locking_enabled
+      bucket_name                = local.bucket_name
+      kms_encryption_enabled     = local.kms_encryption_enabled
+      kms_key_crn                = local.kms_encryption_enabled ? module.key[0].crn : null
+      region_location            = var.region
+      cross_region_location      = local.cross_region_location
+      single_site_location       = local.single_site_location
+      resource_instance_id       = module.cos.cos_instance_id
+      storage_class              = var.bucket_storage_class
+      hard_quota                 = var.hard_quota
+      force_delete               = var.force_delete
+      object_locking_enabled     = var.object_locking_enabled
+      object_lock_duration_years = var.object_lock_duration_years
+      object_versioning = {
+        enable = var.object_locking_enabled
+      }
       skip_iam_authorization_policy = true
       add_bucket_name_suffix        = true
     }
@@ -145,7 +148,7 @@ module "icl_data_bucket" {
       cross_region_location         = local.cross_region_location
       single_site_location          = local.single_site_location
       resource_instance_id          = module.cos.cos_instance_id
-      storage_class                 = var.bucket_storage_class
+      storage_class                 = var.cloud_logs_bucket_class
       hard_quota                    = var.hard_quota
       force_delete                  = var.force_delete
       skip_iam_authorization_policy = true
@@ -168,7 +171,7 @@ module "icl_metrics_bucket" {
       cross_region_location         = local.cross_region_location
       single_site_location          = local.single_site_location
       resource_instance_id          = module.cos.cos_instance_id
-      storage_class                 = var.bucket_storage_class
+      storage_class                 = var.cloud_logs_bucket_class
       hard_quota                    = var.hard_quota
       force_delete                  = var.force_delete
       skip_iam_authorization_policy = true

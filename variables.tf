@@ -156,6 +156,12 @@ variable "object_locking_enabled" {
   default     = false
 }
 
+variable "object_lock_duration_years" {
+  description = "The number of years for the object lock duration. If you specify a number of years, do not specify a value for `object_lock_duration_days`. Applies only if `create_cos_bucket` is set to `true`."
+  type        = number
+  default     = 1
+}
+
 variable "hard_quota" {
   type        = number
   description = "The hard quota (in GB) for the bucket. Set to 0 for unlimited."
@@ -194,6 +200,17 @@ variable "metrics_bucket_name" {
   type        = string
   description = "The name for the new Object Storage bucket."
   default     = "icl-metrics-bucket"
+}
+
+variable "cloud_logs_bucket_class" {
+  type        = string
+  description = "The storage class of the new bucket for cloud logs bucket. Required only if `create_cos_bucket` is true. Possible values: `standard`, `vault`, `cold`, `smart`, `onerate_active`."
+  default     = "standard"
+
+  validation {
+    condition     = can(regex("^standard$|^vault$|^cold$|^smart$|^onerate_active", var.cloud_logs_bucket_class))
+    error_message = "Variable 'cloud_logs_bucket_class' must be 'standard', 'vault', 'cold', 'smart' or 'onerate_active'."
+  }
 }
 
 variable "retention_period" {
