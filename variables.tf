@@ -249,10 +249,37 @@ variable "allowed_vpc_crns" {
 }
 
 variable "allowed_ip_addresses" {
-  description = "Comma-separated list of allowed IP addresses"
+  description = "Comma-separated list of allowed IPv4 or IPv6 addresses"
   type        = string
   default     = ""
+
+  validation {
+    condition = (
+      var.allowed_ip_addresses == "" ||
+      alltrue([
+        for ip in split(",", var.allowed_ip_addresses) :
+        can(regex(
+          "^(" +
+          "((25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})" + # IPv4
+          "|" +
+          "([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}" + # full IPv6
+          "|" +
+          "([0-9a-fA-F]{1,4}:){1,7}:|" + # IPv6 shorthand "::"
+          "([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|" +
+          "([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|" +
+          "([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|" +
+          "([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|" +
+          "([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|" +
+          "[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|" +
+          ":((:[0-9a-fA-F]{1,4}){1,7}|:)" +
+          ")$", trimspace(ip)
+        ))
+      ])
+    )
+    error_message = "allowed_ip_addresses must be a comma-separated list of valid IPv4 or IPv6 addresses."
+  }
 }
+
 
 variable "allowed_network_zone_name" {
   description = "Optional custom name for CBR network zone"

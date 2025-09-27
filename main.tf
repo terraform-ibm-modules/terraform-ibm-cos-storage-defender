@@ -48,7 +48,7 @@ locals {
   )
   key_protect_name = "${local.safe_prefix}${local.effective_key_protect_name}"
   create_key       = true
-  key_name         = "${local.safe_prefix}${var.bucket_name}-cos-key"
+  key_name         = "${local.safe_prefix}${local.effective_bucket_name}-cos-key"
 }
 
 module "kms" {
@@ -134,6 +134,7 @@ locals {
 locals {
   logs_bucket_name    = "${local.safe_prefix}${var.logs_bucket_name}"
   metrics_bucket_name = "${local.safe_prefix}${var.metrics_bucket_name}"
+  storage_class       = local.cos_plan == "cos-one-rate-plan" ? "onerate_active" : var.cloud_logs_bucket_class
 }
 
 module "icl_data_bucket" {
@@ -148,7 +149,7 @@ module "icl_data_bucket" {
       cross_region_location         = local.cross_region_location
       single_site_location          = local.single_site_location
       resource_instance_id          = module.cos.cos_instance_id
-      storage_class                 = var.cloud_logs_bucket_class
+      storage_class                 = local.storage_class
       hard_quota                    = var.hard_quota
       force_delete                  = var.force_delete
       skip_iam_authorization_policy = true
@@ -171,7 +172,7 @@ module "icl_metrics_bucket" {
       cross_region_location         = local.cross_region_location
       single_site_location          = local.single_site_location
       resource_instance_id          = module.cos.cos_instance_id
-      storage_class                 = var.cloud_logs_bucket_class
+      storage_class                 = local.storage_class
       hard_quota                    = var.hard_quota
       force_delete                  = var.force_delete
       skip_iam_authorization_policy = true

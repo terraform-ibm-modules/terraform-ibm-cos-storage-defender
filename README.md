@@ -141,7 +141,7 @@ statement instead the previous block.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_allowed_ip_addresses"></a> [allowed\_ip\_addresses](#input\_allowed\_ip\_addresses) | Comma-separated list of allowed IP addresses | `string` | `""` | no |
+| <a name="input_allowed_ip_addresses"></a> [allowed\_ip\_addresses](#input\_allowed\_ip\_addresses) | Comma-separated list of allowed IPv4 or IPv6 addresses | `string` | `""` | no |
 | <a name="input_allowed_network"></a> [allowed\_network](#input\_allowed\_network) | Allowed networks for the Key Protect instance. Possible values: 'private-only', 'public-and-private'. | `string` | `"public-and-private"` | no |
 | <a name="input_allowed_network_zone_name"></a> [allowed\_network\_zone\_name](#input\_allowed\_network\_zone\_name) | Optional custom name for CBR network zone | `string` | `"cyber-zone"` | no |
 | <a name="input_allowed_vpc"></a> [allowed\_vpc](#input\_allowed\_vpc) | Single VPC JSON string with { name, region }, or empty string if not used | `string` | `""` | no |
