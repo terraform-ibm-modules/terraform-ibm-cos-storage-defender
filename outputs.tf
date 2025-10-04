@@ -2,29 +2,23 @@
 # Outputs
 ########################################################################################################################
 
-#
-# Developer tips:
-#   - Below are some good practise sample outputs
-#   - They should be updated for outputs applicable to the module being added
-#   - Use variable validation when possible
-#
-
-output "account_id" {
-  description = "An alpha-numeric value identifying the account ID."
-  value       = ibm_resource_instance.cos_instance.account_id
+output "cos_instance_id" {
+  value       = module.cos.cos_instance_id
+  description = "The ID of the COS instance."
 }
 
-output "guid" {
-  description = "The GUID of the resource instance."
-  value       = ibm_resource_instance.cos_instance.guid
+output "credentials_json" {
+  value       = module.cos.resource_keys
+  description = "The HMAC credentials JSON for the COS instance."
+  sensitive   = true
 }
 
-output "id" {
-  description = "The unique identifier of the resource instance."
-  value       = ibm_resource_instance.cos_instance.id
+output "cybervault_bucket_name" {
+  description = "The name of the Cybervault COS bucket."
+  value       = module.cos_buckets["cybervault"].buckets[local.cybervault_bucket].bucket_name
 }
 
-output "crn" {
-  description = "The CRN of the resource instance."
-  value       = ibm_resource_instance.cos_instance.crn
+output "cybervault_bucket_endpoint" {
+  description = "The direct S3 endpoint of the Cybervault COS bucket."
+  value       = module.cos_buckets["cybervault"].buckets[local.cybervault_bucket].s3_endpoint_direct
 }
