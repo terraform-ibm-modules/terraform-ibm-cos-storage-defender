@@ -5,8 +5,12 @@
             "label": "Cloud Object Storage Cyber Vault for Storage Defender",
             "product_kind": "solution",
             "tags": [
+                "ibm_created",
+                "target_terraform",
+                "terraform",
+                "solution",
                 "storage",
-                "ibm_created"
+                "platform_engineering"
             ],
             "keywords": [
                 "terraform",
@@ -89,14 +93,12 @@
                         {
                             "key": "ibmcloud_api_key",
                             "type": "password",
-                            "description": "The IBM Cloud platform API key to deploy resources.",
                             "required": true,
                             "virtual": false
                         },
                         {
                             "key": "prefix",
-                            "required": true,
-                            "description": "The prefix to be added to the default name of resources created by this solution. To skip using a prefix, set this value to null or an empty string. The prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens ('-'). It should not exceed 16 characters, must not end with a hyphen ('-'), and cannot contain consecutive hyphens ('--'). Example: prod-us-south."
+                            "required": true
                         },
                         {
                             "key": "region",
@@ -146,9 +148,6 @@
                         },
                         {
                             "key": "existing_resource_group_name",
-                            "type": "string",
-                            "default_value": "Default",
-                            "description": "The name of an existing resource group to provision the resources.",
                             "display_name": "resource_group",
                             "required": false,
                             "custom_config": {
@@ -163,27 +162,19 @@
                         },
                         {
                             "key": "cos_instance_name",
-                            "type": "string",
-                            "default_value": "cos-cybervault",
                             "display_name": "cos_instance_name",
-                            "description": "The name for the IBM Cloud Object Storage instance provisioned by this solution. A default name has been provided. The instance will be named with the prefix plus this value in the format <prefix>-value.",
                             "required": false,
                             "virtual": false
                         },
                         {
                             "key": "bucket_name",
-                            "type": "string",
                             "display_name": "cos_bucket_name",
-                            "description": "The name for the IBM Cloud Object Storage bucket provisioned by this solution. A default name has been provided. The instance will be named with the prefix plus this value in the format <prefix>-value. The bucket namewill also be appended with a randomly generated string of unique characters.",
                             "required": false,
                             "virtual": false
                         },
                         {
                             "key": "bucket_storage_class",
-                            "type": "string",
-                            "default_value": "smart",
                             "display_name": "cos_bucket_storage_class",
-                            "description": "The storage class for the COS bucket",
                             "required": false,
                             "virtual": false,
                             "options": [
@@ -212,34 +203,23 @@
                         {
                             "key": "object_locking_enabled",
                             "type": "boolean",
-                            "default_value": false,
-                            "description": "Enable object locking on the bucket.",
                             "required": false,
                             "virtual": false
                         },
                         {
                             "key": "key_protect_name",
-                            "type": "string",
-                            "default_value": "",
                             "display_name": "kms_instance_name",
-                            "description": "The Name of the KMS instance. used to manage the root key to encrypt data stored in COS.",
                             "required": false,
                             "virtual": false
                         },
                         {
                             "key": "cloud_log_instance_name",
-                            "type": "string",
-                            "default_value": "",
                             "display_name": "cloud_log_instance_name",
-                            "description": "The Name of the Cloud logs instance.",
                             "required": false,
                             "virtual": false
                         },
                         {
                             "key": "allowed_vpc_crns",
-                            "type": "string",
-                            "default_value": "",
-                            "description": "Comma-separated list of allowed VPC CRNs. This will restrict access to the bucket from only specifically allowed VPC CRNs.  Entering values in this field will result in the creation of a new network zone.",
                             "required": false,
                             "virtual": false,
                             "custom_config": {
@@ -250,10 +230,7 @@
                         },
                         {
                             "key": "allowed_vpc",
-                            "type": "string",
-                            "description": "List of allowed VPCs. This will restrict access to the bucket from only specifically allowed VPCs.  Entering values in this field will result in the creation of a new network zone.",
                             "required": false,
-                            "default_value": "__NOT_SET__",
                             "custom_config": {
                                 "type": "vpc",
                                 "grouping": "deployment",
@@ -263,9 +240,6 @@
                         },
                         {
                             "key": "allowed_ip_addresses",
-                            "type": "string",
-                            "default_value": "",
-                            "description": "List of allowed IP addresses. This will restrict access to the bucket from only specifically allowed IP addresses.  Entering values in this field will result in the creation of a new network zone.",
                             "required": false,
                             "virtual": false,
                             "custom_config": {
@@ -276,17 +250,11 @@
                         },
                         {
                             "key": "allowed_network_zone_name",
-                            "type": "string",
-                            "default_value": "",
-                            "description": "Name used for new network zone created if values are entered in the allowed_ip_addresses, allowed_vpc, or allowed_vpc_crns fields",
                             "required": false,
                             "virtual": false
                         },
                         {
                             "key": "cos_allowed_endpoint_types",
-                            "type": "string",
-                            "default_value": "all",
-                            "description": "Restrict access to the COS bucket through specific endpoint types. By specifying a value here, access to the bucket will be restricted to that endpoint type. Public endpoints are used for traffic originating from outside IBM Cloud. Private endpoints are used for traffic coming from other parts ofIBM Cloud, excluding VPCs. Direct endpoints are used for traffic coming from customer VPCs.",
                             "required": false,
                             "virtual": false,
                             "options": [
@@ -306,10 +274,7 @@
                         },
                         {
                             "key": "role",
-                            "type": "string",
-                            "default_value": "Writer",
                             "display_name": "cos_role_for_defender",
-                            "description": "This is the role that will be granted to the service credential used by Defender when making requests to COS. The Writer role has been selected by default since it contains the minimum set of permissions needed by Defender.",
                             "required": false,
                             "options": [
                                 {
@@ -348,136 +313,91 @@
                             "virtual": false
                         },
                         {
-                            "key": "cloud_logs_endpoint",
-                            "type": "string",
-                            "default_value": "public-and-private",
-                            "description": "Service endpoint type for the Cloud Logs instance.",
+                            "key": "service_endpoints",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
-                            "key": "kp_plan",
-                            "type": "string",
-                            "default_value": "tiered-pricing",
-                            "description": "Plan for the Key Protect instance.",
+                            "key": "key_protect_plan",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "logs_bucket_name",
-                            "type": "string",
-                            "default_value": "icl-logs-bucket",
-                            "description": "The name for the Cloud Logs bucket.",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "metrics_bucket_name",
-                            "type": "string",
-                            "default_value": "icl-metrics-bucket",
-                            "description": "The name for the Cloud Metrics bucket.",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "retention_period",
-                            "type": "number",
-                            "default_value": 7,
-                            "description": "Retention period (in days) for logs and metrics stored in Cloud Logs.",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "allowed_network",
-                            "type": "string",
-                            "default_value": "public-and-private",
-                            "description": "Allowed networks for the Key Protect instance. Possible values: 'private-only', 'public-and-private'.",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "cos_location",
-                            "type": "string",
-                            "default_value": "global",
-                            "description": "The location for the Object Storage instance.",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "endpoint_type",
-                            "type": "string",
-                            "default_value": "public",
-                            "description": "The type of endpoint for the KMS key. Options: 'public', 'private'.",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "force_delete",
-                            "type": "boolean",
-                            "default_value": true,
-                            "description": "Whether to force delete the key when deleting the resource.",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "hard_quota",
-                            "type": "number",
-                            "default_value": 1024,
-                            "description": "The hard quota (in GB) for the bucket. Set to 0 for unlimited.",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "standard_key",
-                            "type": "boolean",
-                            "default_value": false,
-                            "description": "Whether to create a standard key (true) or an imported key (false).",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
-                            "key": "icl_plan",
-                            "type": "string",
-                            "default_value": "standard",
-                            "description": "The IBM Cloud Logs plan to provision. Available: standard.",
+                            "key": "cloud_logs_plan",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "zone_description",
-                            "type": "string",
-                            "default_value": "CBR zone created by Terraform",
-                            "description": "Description of the zone",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "object_lock_duration_years",
-                            "type": "number",
-                            "default_value": 1,
-                            "description": "The number of years for the object lock duration. If you specify a number of years, do not specify a value for `object_lock_duration_days`. Applies only if `create_cos_bucket` is set to `true`.",
                             "required": false,
                             "virtual": false,
                             "hidden": true
                         },
                         {
                             "key": "cloud_logs_bucket_class",
-                            "type": "string",
-                            "default_value": "standard",
-                            "description": "The number of years for the object lock duration. If you specify a number of years, do not specify a value for `object_lock_duration_days`. Applies only if `create_cos_bucket` is set to `true`.",
                             "required": false,
                             "virtual": false,
                             "hidden": true

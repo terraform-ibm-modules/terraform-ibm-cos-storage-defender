@@ -1,10 +1,15 @@
-# Looks up an existing resource group by name
-
-data "ibm_resource_group" "existing_resource_group" {
-  name = var.existing_resource_group_name
+##############################################################################
+# Resource Group
+##############################################################################
+module "resource_group" {
+  source                       = "terraform-ibm-modules/resource-group/ibm"
+  version                      = "1.3.0"
+  existing_resource_group_name = var.existing_resource_group_name
 }
 
-# Configure locals
+##############################################################################
+# COS Instance
+##############################################################################
 locals {
   effective_cos_instance_name = (
     var.cos_instance_name != "" ? var.cos_instance_name : "cos-cybervault"
@@ -16,8 +21,6 @@ locals {
   hmac_key_name     = "${local.safe_prefix}hmac-creds"
 }
 
-# Create Cos Instance
-
 module "cos" {
   source              = "terraform-ibm-modules/cos/ibm"
   version             = "10.2.21"
@@ -26,7 +29,7 @@ module "cos" {
   create_cos_instance = true
   create_cos_bucket   = false
   cos_location        = var.cos_location
-  resource_group_id   = data.ibm_resource_group.existing_resource_group.id
+  resource_group_id   = module.resource_group.resource_group_id
 
   resource_keys = [
     {
@@ -39,8 +42,10 @@ module "cos" {
   ]
 }
 
-data "ibm_iam_account_settings" "iam_account_settings" {
-}
+##############################################################################
+# KMS and Key
+##############################################################################
+data "ibm_iam_account_settings" "iam_account_settings" {}
 
 locals {
   effective_key_protect_name = (
@@ -48,7 +53,7 @@ locals {
   )
   key_protect_name = "${local.safe_prefix}${local.effective_key_protect_name}"
   create_key       = true
-  key_name         = "${local.safe_prefix}${local.effective_bucket_name}-cos-key"
+  key_name         = "${local.safe_prefix}${var.bucket_name != "" ? var.bucket_name : "cybervault-bucket"}-cos-key"
 }
 
 module "kms" {
@@ -56,8 +61,8 @@ module "kms" {
   version           = "2.10.12"
   key_protect_name  = local.key_protect_name
   region            = var.region
-  resource_group_id = data.ibm_resource_group.existing_resource_group.id
-  plan              = var.kp_plan
+  resource_group_id = module.resource_group.resource_group_id
+  plan              = var.key_protect_plan
   allowed_network   = var.allowed_network
 }
 
@@ -72,12 +77,13 @@ module "key" {
   standard_key    = var.standard_key
 }
 
-
+##############################################################################
+# COS → KMS authorization
+##############################################################################
 locals {
   create_authorization_policy = true
 }
 
-# COS → KMS authorization policy
 resource "ibm_iam_authorization_policy" "cos_to_kms" {
   count = local.create_authorization_policy ? 1 : 0
 
@@ -88,126 +94,107 @@ resource "ibm_iam_authorization_policy" "cos_to_kms" {
   roles                       = ["Reader"]
 }
 
+##############################################################################
+# COS Buckets (Cybervault + Logs + Metrics)
+##############################################################################
 locals {
   effective_bucket_name = (
     var.bucket_name != "" ? var.bucket_name : "cybervault-bucket"
   )
-  bucket_name = "${local.safe_prefix}${local.effective_bucket_name}"
 
-  # based on region set region location for resiliancy
+  logs_bucket_name    = "${local.safe_prefix}${var.logs_bucket_name}"
+  metrics_bucket_name = "${local.safe_prefix}${var.metrics_bucket_name}"
+  cybervault_bucket   = "${local.safe_prefix}${local.effective_bucket_name}"
+
+  storage_class = local.cos_plan == "cos-one-rate-plan" ? "onerate_active" : var.cloud_logs_bucket_class
+
   cross_region_location  = null
   single_site_location   = null
   kms_encryption_enabled = true
+
+  bucket_definitions = {
+    cybervault = {
+      bucket_name                = local.cybervault_bucket
+      object_locking_enabled     = var.object_locking_enabled
+      object_lock_duration_years = var.object_lock_duration_years
+      storage_class              = var.bucket_storage_class
+    }
+    logs = {
+      bucket_name                = local.logs_bucket_name
+      object_locking_enabled     = false
+      object_lock_duration_years = null
+      storage_class              = local.storage_class
+    }
+    metrics = {
+      bucket_name                = local.metrics_bucket_name
+      object_locking_enabled     = false
+      object_lock_duration_years = null
+      storage_class              = local.storage_class
+    }
+  }
 }
 
-module "cos_bucket" {
+module "cos_buckets" {
   source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
   version = "10.2.21"
+
+  for_each = local.bucket_definitions
+
   bucket_configs = [
     {
-      bucket_name                = local.bucket_name
+      bucket_name                = each.value.bucket_name
       kms_encryption_enabled     = local.kms_encryption_enabled
       kms_key_crn                = local.kms_encryption_enabled ? module.key[0].crn : null
       region_location            = var.region
       cross_region_location      = local.cross_region_location
       single_site_location       = local.single_site_location
       resource_instance_id       = module.cos.cos_instance_id
-      storage_class              = var.bucket_storage_class
+      storage_class              = each.value.storage_class
       hard_quota                 = var.hard_quota
       force_delete               = var.force_delete
-      object_locking_enabled     = var.object_locking_enabled
-      object_lock_duration_years = var.object_lock_duration_years
+      object_locking_enabled     = each.value.object_locking_enabled
+      object_lock_duration_years = each.value.object_lock_duration_years
       object_versioning = {
-        enable = var.object_locking_enabled
+        enable = try(each.value.object_locking_enabled, false)
       }
       skip_iam_authorization_policy = true
       add_bucket_name_suffix        = true
     }
   ]
+
   depends_on = [ibm_iam_authorization_policy.cos_to_kms]
 }
 
 locals {
-  cos_bucket_name = module.cos_bucket.buckets[local.bucket_name].bucket_name
-}
-
-locals {
-  logs_bucket_name    = "${local.safe_prefix}${var.logs_bucket_name}"
-  metrics_bucket_name = "${local.safe_prefix}${var.metrics_bucket_name}"
-  storage_class       = local.cos_plan == "cos-one-rate-plan" ? "onerate_active" : var.cloud_logs_bucket_class
-}
-
-module "icl_data_bucket" {
-  source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
-  version = "10.2.21"
-  bucket_configs = [
-    {
-      bucket_name                   = local.logs_bucket_name
-      kms_encryption_enabled        = local.kms_encryption_enabled
-      kms_key_crn                   = local.kms_encryption_enabled ? module.key[0].crn : null
-      region_location               = var.region
-      cross_region_location         = local.cross_region_location
-      single_site_location          = local.single_site_location
-      resource_instance_id          = module.cos.cos_instance_id
-      storage_class                 = local.storage_class
-      hard_quota                    = var.hard_quota
-      force_delete                  = var.force_delete
-      skip_iam_authorization_policy = true
-      add_bucket_name_suffix        = true
-
+  data_storage = {
+    logs_data = {
+      enabled         = true
+      bucket_crn      = module.cos_buckets["logs"].buckets[local.logs_bucket_name].bucket_crn
+      bucket_endpoint = module.cos_buckets["logs"].buckets[local.logs_bucket_name].s3_endpoint_direct
     }
-  ]
-  depends_on = [ibm_iam_authorization_policy.cos_to_kms]
-}
-
-module "icl_metrics_bucket" {
-  source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
-  version = "10.2.21"
-  bucket_configs = [
-    {
-      bucket_name                   = local.metrics_bucket_name
-      kms_encryption_enabled        = local.kms_encryption_enabled
-      kms_key_crn                   = local.kms_encryption_enabled ? module.key[0].crn : null
-      region_location               = var.region
-      cross_region_location         = local.cross_region_location
-      single_site_location          = local.single_site_location
-      resource_instance_id          = module.cos.cos_instance_id
-      storage_class                 = local.storage_class
-      hard_quota                    = var.hard_quota
-      force_delete                  = var.force_delete
-      skip_iam_authorization_policy = true
-      add_bucket_name_suffix        = true
+    metrics_data = {
+      enabled         = true
+      bucket_crn      = module.cos_buckets["metrics"].buckets[local.metrics_bucket_name].bucket_crn
+      bucket_endpoint = module.cos_buckets["metrics"].buckets[local.metrics_bucket_name].s3_endpoint_direct
     }
-  ]
-  depends_on = [ibm_iam_authorization_policy.cos_to_kms]
+  }
 }
 
+##############################################################################
+# Cloud Logs
+##############################################################################
 locals {
   effective_cloud_log_instance_name = (
     var.cloud_log_instance_name != "" ? var.cloud_log_instance_name : "Cloud-Logs"
   )
   cloud_log_instance_name = "${local.safe_prefix}${local.effective_cloud_log_instance_name}"
-
-  data_storage = {
-    logs_data = {
-      enabled         = true
-      bucket_crn      = module.icl_data_bucket.buckets[local.logs_bucket_name].bucket_crn
-      bucket_endpoint = module.icl_data_bucket.buckets[local.logs_bucket_name].s3_endpoint_direct
-    }
-    metrics_data = {
-      enabled         = true
-      bucket_crn      = module.icl_metrics_bucket.buckets[local.metrics_bucket_name].bucket_crn
-      bucket_endpoint = module.icl_metrics_bucket.buckets[local.metrics_bucket_name].s3_endpoint_direct
-    }
-  }
 }
-
 
 resource "ibm_iam_authorization_policy" "cos_policy" {
   count               = 1
   source_service_name = "logs"
   roles               = ["Writer"]
-  description         = "Allow Cloud logs instances `Writer` access to the COS bucket with ID "
+  description         = "Allow Cloud logs instances `Writer` access to the COS bucket"
 
   resource_attributes {
     name     = "serviceName"
@@ -233,33 +220,35 @@ module "cloud_logs" {
   version                       = "1.6.29"
   depends_on                    = [ibm_iam_authorization_policy.cos_policy]
   instance_name                 = local.cloud_log_instance_name
-  plan                          = var.icl_plan
+  plan                          = var.cloud_logs_plan
   region                        = var.region
-  resource_group_id             = data.ibm_resource_group.existing_resource_group.id
-  service_endpoints             = var.cloud_logs_endpoint
+  resource_group_id             = module.resource_group.resource_group_id
+  service_endpoints             = var.service_endpoints
   retention_period              = var.retention_period
   policies                      = []
   skip_logs_routing_auth_policy = true
   data_storage = {
     logs_data = {
-      enabled              = local.data_storage.logs_data.enabled ? true : false
-      bucket_crn           = local.data_storage.logs_data.enabled ? local.data_storage.logs_data.bucket_crn : null
-      bucket_endpoint      = local.data_storage.logs_data.enabled ? local.data_storage.logs_data.bucket_endpoint : null
+      enabled              = local.data_storage.logs_data.enabled
+      bucket_crn           = local.data_storage.logs_data.bucket_crn
+      bucket_endpoint      = local.data_storage.logs_data.bucket_endpoint
       skip_cos_auth_policy = true
     }
     metrics_data = {
-      enabled              = local.data_storage.metrics_data.enabled ? true : false
-      bucket_crn           = local.data_storage.metrics_data.enabled ? local.data_storage.metrics_data.bucket_crn : null
-      bucket_endpoint      = local.data_storage.metrics_data.enabled ? local.data_storage.metrics_data.bucket_endpoint : null
+      enabled              = local.data_storage.metrics_data.enabled
+      bucket_crn           = local.data_storage.metrics_data.bucket_crn
+      bucket_endpoint      = local.data_storage.metrics_data.bucket_endpoint
       skip_cos_auth_policy = true
     }
   }
 }
 
+##############################################################################
+# Context-Based Restrictions (CBR)
+##############################################################################
 locals {
   account_id = data.ibm_iam_account_settings.iam_account_settings.account_id
 
-  # Allowed endpoint types
   endpoint_context = (
     var.cos_allowed_endpoint_types == "all" ? [
       { name = "endpointType", value = "private" },
@@ -270,14 +259,13 @@ locals {
     ] : []
   )
 
-  # Parse inputs for zone creation
-  allowed_vpc_obj           = (var.allowed_vpc != "" && var.allowed_vpc != "-") ? jsondecode(var.allowed_vpc) : null
-  allowed_vpc_crns_list     = var.allowed_vpc_crns != "" ? [for crn in split(",", var.allowed_vpc_crns) : trimspace(crn)] : []
-  allowed_ip_addresses_list = var.allowed_ip_addresses != "" ? [for ip in split(",", var.allowed_ip_addresses) : trimspace(ip)] : []
+  allowed_vpc_obj       = (var.allowed_vpc != null && var.allowed_vpc != "" && var.allowed_vpc != "-") ? jsondecode(var.allowed_vpc) : null
+  allowed_vpc_crns_list = var.allowed_vpc_crns != null && var.allowed_vpc_crns != "" ? [for crn in split(",", var.allowed_vpc_crns) : trimspace(crn)] : []
+  allowed_ip_addresses_list = (
+    var.allowed_ip_addresses != null && var.allowed_ip_addresses != ""
+  ) ? [for ip in split(",", var.allowed_ip_addresses) : trimspace(ip)] : []
 }
 
-
-# Fetch the VPC if provided
 data "ibm_is_vpc" "single_vpc" {
   count = (
     local.allowed_vpc_obj != null &&
@@ -288,14 +276,10 @@ data "ibm_is_vpc" "single_vpc" {
 }
 
 locals {
-  # If data.ibm_is_vpc.single_vpc uses `count`, then this works:
   allowed_vpc_list = length(data.ibm_is_vpc.single_vpc) > 0 ? [data.ibm_is_vpc.single_vpc[0].crn] : []
 
-  # True if any of the allow-lists are non-empty
   use_custom_zone = length(local.allowed_vpc_list) > 0 || length(local.allowed_vpc_crns_list) > 0 || length(local.allowed_ip_addresses_list) > 0
-
-  # Create rule if you have *any* allowed sources defined
-  create_cbr_rule = length(local.allowed_vpc_list) > 0 || length(local.allowed_vpc_crns_list) > 0 || length(local.allowed_ip_addresses_list) > 0
+  create_cbr_rule = local.use_custom_zone
 }
 
 module "cbr_zone" {
@@ -303,7 +287,7 @@ module "cbr_zone" {
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module"
   version          = "1.33.2"
   name             = "${local.safe_prefix}${var.allowed_network_zone_name}"
-  account_id       = local.account_id # pragma: allowlist secret
+  account_id       = local.account_id
   zone_description = var.zone_description
   addresses = concat(
     [for vpc in local.allowed_vpc_list : { type = "vpc", value = vpc }],
@@ -313,9 +297,6 @@ module "cbr_zone" {
   excluded_addresses = []
 }
 
-##############################################################################
-# Final context attributes for the rule
-##############################################################################
 locals {
   context_attributes = concat(
     local.endpoint_context,
@@ -361,9 +342,7 @@ module "cbr_rule" {
 
   depends_on = [
     module.cos,
-    module.cos_bucket,
-    module.icl_data_bucket,
-    module.icl_metrics_bucket,
+    module.cos_buckets,
     module.cloud_logs,
     module.kms
   ]

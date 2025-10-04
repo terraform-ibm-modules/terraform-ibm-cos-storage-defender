@@ -4,14 +4,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
 )
 
 const fullyConfigFlavorDir = "."
-const resourceGroup = "log-mon"
 
 func TestFullyConfigurable(t *testing.T) {
 	t.Parallel()
@@ -30,21 +28,28 @@ func TestFullyConfigurable(t *testing.T) {
 		Prefix:  prefix,
 		TarIncludePatterns: []string{
 			"examples/advanced/*.tf", // example code
-			"*.tf",                   // root-level *.tf (main.tf, variables.tf, outputs.tf, provider.tf, version.tf)
+			"*.tf",                   // root-level *.tf
 			"modules/**/*.tf",        // all submodules
 		},
-		TemplateFolder:         fullyConfigFlavorDir, // still "examples/advanced"
+		TemplateFolder:         fullyConfigFlavorDir,
 		DeleteWorkspaceOnFail:  false,
 		WaitJobCompleteMinutes: 120,
 	})
 
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
-		{Name: "existing_resource_group_name", Value: resourceGroup, DataType: "string"},
 		{Name: "region", Value: options.Region, DataType: "string"},
 		{Name: "prefix", Value: options.Prefix, DataType: "string"},
 	}
 
 	err := options.RunSchematicTest()
 	assert.Nil(t, err, "This should not have errored")
+}
+
+// ------------------------------------------------------------------
+// Placeholder test for future upgrade / backward compatibility checks
+// ------------------------------------------------------------------
+
+func TestUpgrade(t *testing.T) {
+	t.Skip("Skipping upgrade test — no previous version to test against yet")
 }
