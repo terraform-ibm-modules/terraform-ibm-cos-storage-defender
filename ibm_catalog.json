@@ -70,8 +70,12 @@
                                 "description": "Create and configures an IBM Cloud Object Storage instance."
                             },
                             {
-                                "title": "Service credentials",
-                                "description": "Create and configure Object Storage service credentials for your instance. Optionally choose to configure IBM Cloud® Secrets Manager to manage the service credentials."
+                                "title": "Cloud Logs instance",
+                                "description": "Create and configures an IBM Cloud Logs instance."
+                            },
+                            {
+                                "title": "Key Protect instance",
+                                "description": "Create and configures an IBM Key protect instance."
                             },
                             {
                                 "title": "Context-based restrictions",
@@ -437,26 +441,28 @@
                             "service_name": "cloud-object-storage",
                             "role_crns": [
                                 "crn:v1:bluemix:public:iam::::role:Writer",
-                                "crn:v1:bluemix:public:iam::::role:Reader"
+                                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
                             ]
                         },
                         {
                             "service_name": "kms",
                             "role_crns": [
-                                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
+                                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
+                                "crn:v1:bluemix:public:iam::::role:Editor"
                             ]
                         },
                         {
                             "service_name": "logs",
                             "role_crns": [
+                                "crn:v1:bluemix:public:iam::::role:Writer",
+                                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
+                            ]
+                        },
+                        {
+                            "service_name": "context-based-restrictions",
+                            "role_crns": [
                                 "crn:v1:bluemix:public:iam::::role:Writer"
                             ]
-                        }
-                    ],
-                    "licenses": [
-                        {
-                            "name": "License name",
-                            "smref": "Link to the license"
                         }
                     ]
                 }
