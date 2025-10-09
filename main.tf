@@ -329,7 +329,7 @@ module "cbr_rule" {
   version          = "1.33.2"
   count            = local.create_cbr_rule ? 1 : 0
   rule_description = "CBR rule for COS"
-  enforcement_mode = "disabled"
+  enforcement_mode = "enabled"
 
   rule_contexts = [
     for ctx in local.context_attributes : {
