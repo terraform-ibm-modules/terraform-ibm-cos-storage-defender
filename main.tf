@@ -73,7 +73,7 @@ module "key" {
   key_name        = local.key_name
   kms_instance_id = module.kms.key_protect_guid
   force_delete    = true
-  endpoint_type   = var.endpoint_type
+  endpoint_type   = var.kms_endpoint_type
   standard_key    = var.standard_key
 }
 
@@ -260,7 +260,7 @@ locals {
   )
 
   allowed_vpc_obj       = (var.allowed_vpc != null && var.allowed_vpc != "" && var.allowed_vpc != "-") ? jsondecode(var.allowed_vpc) : null
-  allowed_vpc_crns_list = var.allowed_vpc_crns != null && var.allowed_vpc_crns != "" ? [for crn in split(",", var.allowed_vpc_crns) : trimspace(crn)] : []
+  allowed_vpc_crns_list = var.allowed_vpc_crns != null ? var.allowed_vpc_crns : []
   allowed_ip_addresses_list = (
     var.allowed_ip_addresses != null && var.allowed_ip_addresses != ""
   ) ? [for ip in split(",", var.allowed_ip_addresses) : trimspace(ip)] : []
@@ -329,7 +329,7 @@ module "cbr_rule" {
   version          = "1.33.2"
   count            = local.create_cbr_rule ? 1 : 0
   rule_description = "CBR rule for COS"
-  enforcement_mode = "enabled"
+  enforcement_mode = "disabled"
 
   rule_contexts = [
     for ctx in local.context_attributes : {

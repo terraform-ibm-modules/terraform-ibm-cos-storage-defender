@@ -9,7 +9,7 @@ variable "ibmcloud_api_key" {
 }
 
 variable "region" {
-  description = "The region to provision the bucket. If specified, set `cross_region_location` and `single_site_location` to `null`."
+  description = "The IBM Cloud region where all resources (COS instance and buckets, Key Protect, Cloud Logs, etc.) will be provisioned. If specifying cross-region or single-site locations for COS buckets, set `cross_region_location` and `single_site_location` to `null`."
   type        = string
   default     = "us-east"
 }
@@ -17,8 +17,8 @@ variable "region" {
 variable "prefix" {
   type        = string
   nullable    = true
-  default     = null
-  description = "The prefix to be added to all resources created by this solution. To skip using a prefix, set this value to null or an empty string. The prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It should not exceed 16 characters, must not end with a hyphen('-'), and can not contain consecutive hyphens ('--'). Example: prod-us-south. [Learn more](https://terraform-ibm-modules.github.io/documentation/#/prefix.md)."
+  description = "The prefix to add to all resources that this solution creates (e.g `prod`, `test`, `dev`). To skip using a prefix, set this value to `null` or an empty string. [Learn more](https://terraform-ibm-modules.github.io/documentation/#/prefix.md)."
+
   validation {
     # - null and empty string is allowed
     # - Must not contain consecutive hyphens (--): length(regexall("--", var.prefix)) == 0
@@ -43,8 +43,8 @@ variable "prefix" {
 
 variable "existing_resource_group_name" {
   type        = string
-  description = "The name of an existing resource group to provision the resources."
-  default     = "Default"
+  description = "The name of an existing resource group to provision the resources. If not provided the default resource group will be used."
+  default     = null
 }
 
 
@@ -63,16 +63,6 @@ variable "role" {
   type        = string
   default     = "Writer"
 }
-
-# variable "plan" {
-#   description = "The plan to use when Object Storage instances are created. [Learn more](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-provision)."
-#   type        = string
-#   default     = "standard"
-#   validation {
-#     condition     = contains(["standard", "cos-one-rate-plan"], var.plan)
-#     error_message = "The specified plan is not a valid selection!"
-#   }
-# }
 
 variable "cos_location" {
   description = "The location for the Object Storage instance."
@@ -119,18 +109,18 @@ variable "allowed_network" {
 
 variable "standard_key" {
   type        = bool
-  description = "Whether to create a standard key (true) or an imported key (false)."
+  description = "Specifies whether to create a standard encryption key (true) or import an existing key (false).For more information, see: [Key Protect concepts](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-understand-concepts)."
   default     = false
 }
 
-variable "endpoint_type" {
+variable "kms_endpoint_type" {
   type        = string
   description = "Endpoint to use when creating the Key"
   default     = "private"
 
   validation {
-    condition     = can(regex("^(public|private)$", var.endpoint_type))
-    error_message = "Variable 'endpoint_type' must be 'public' or 'private'."
+    condition     = can(regex("^(public|private)$", var.kms_endpoint_type))
+    error_message = "Variable 'kms_endpoint_type' must be 'public' or 'private'."
   }
 }
 
@@ -254,7 +244,7 @@ variable "allowed_vpc" {
 
 variable "allowed_vpc_crns" {
   description = "Comma-separated list of allowed VPC CRNs. This will restrict access to the bucket from only specifically allowed VPC CRNs.  Entering values in this field will result in the creation of a new network zone."
-  type        = string
+  type        = list(string)
   default     = null
 }
 
@@ -303,8 +293,8 @@ variable "cos_allowed_endpoint_types" {
   default     = "all"
 
   validation {
-    condition     = contains(["public", "private", "all", ""], var.cos_allowed_endpoint_types)
-    error_message = "Invalid value for cos_allowed_endpoint_types. Allowed values are: 'public', 'private', 'all', or empty string."
+    condition     = contains(["public", "private", "all"], var.cos_allowed_endpoint_types)
+    error_message = "Invalid value for cos_allowed_endpoint_types. Allowed values are: 'public', 'private', 'all'."
   }
 }
 

@@ -102,6 +102,13 @@
                         },
                         {
                             "key": "prefix",
+                            "value_constraints": [
+                                {
+                                    "type": "regex",
+                                    "description": "Prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It must not end with a hyphen ('-'), and cannot contain consecutive hyphens ('--'). It should not exceed 16 characters.",
+                                    "value": "^$|^__NULL__$|^[a-z](?!.*--)(?:[a-z0-9-]{0,14}[a-z0-9])?$"
+                                }
+                            ],
                             "required": true
                         },
                         {
@@ -147,13 +154,16 @@
                                 {
                                     "displayname": "Sao Paulo (br-sao)",
                                     "value": "br-sao"
+                                },
+                                {
+                                    "displayname": "Sydney (au-syd)",
+                                    "value": "au-syd"
                                 }
                             ]
                         },
                         {
                             "key": "existing_resource_group_name",
                             "display_name": "resource_group",
-                            "required": false,
                             "custom_config": {
                                 "type": "resource_group",
                                 "grouping": "deployment",
@@ -162,7 +172,8 @@
                                     "identifier": "rg_name"
                                 }
                             },
-                            "virtual": false
+                            "default_value": "Default",
+                            "description": "The name of an existing resource group to provision the resources."
                         },
                         {
                             "key": "cos_instance_name",
@@ -224,13 +235,19 @@
                         },
                         {
                             "key": "allowed_vpc_crns",
+                            "type": "array",
+                            "default_value": "",
+                            "description": "Comma-separated list of allowed VPC CRNs. This will restrict access to the bucket from only specifically allowed VPC CRNs.  Entering values in this field will result in the creation of a new network zone.",
                             "required": false,
-                            "virtual": false,
                             "custom_config": {
-                                "type": "textarea",
+                                "type": "array",
                                 "grouping": "deployment",
-                                "original_grouping": "deployment"
-                            }
+                                "original_grouping": "deployment",
+                                "config_constraints": {
+                                    "type": "string"
+                                }
+                            },
+                            "virtual": false
                         },
                         {
                             "key": "allowed_vpc",
@@ -359,7 +376,7 @@
                             "hidden": true
                         },
                         {
-                            "key": "endpoint_type",
+                            "key": "kms_endpoint_type",
                             "required": false,
                             "virtual": false,
                             "hidden": true
