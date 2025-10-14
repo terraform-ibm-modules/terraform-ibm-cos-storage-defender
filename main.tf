@@ -260,17 +260,14 @@ locals {
   allowed_vpc_crns_list = var.allowed_vpc_crns != null ? var.allowed_vpc_crns : []
   allowed_vpc_crns      = var.allowed_vpc != null ? var.allowed_vpc : []
 
-  #Combine both lists into a set to remove duplicates
   combined_allowed_vpcs = tolist(toset(concat(local.allowed_vpc_crns_list, local.allowed_vpc_crns)))
 
-  # Normalize IPs, split comma-separated, and deduplicate
   normalized_allowed_ips = tolist(toset(
     var.allowed_ip_addresses != null ?
     var.allowed_ip_addresses :
     []
   ))
 
-  # Determine if we should create a custom zone
   use_custom_zone = (
     length(local.combined_allowed_vpcs) > 0 ||
     length(local.normalized_allowed_ips) > 0
