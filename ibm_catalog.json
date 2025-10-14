@@ -236,7 +236,7 @@
                         {
                             "key": "allowed_vpc_crns",
                             "type": "array",
-                            "default_value": "",
+                            "default_value": [],
                             "description": "Comma-separated list of allowed VPC CRNs. This will restrict access to the bucket from only specifically allowed VPC CRNs.  Entering values in this field will result in the creation of a new network zone.",
                             "required": false,
                             "custom_config": {
@@ -251,22 +251,34 @@
                         },
                         {
                             "key": "allowed_vpc",
+                            "type": "array",
+                            "default_value": [],
                             "required": false,
                             "custom_config": {
-                                "type": "vpc",
+                                "type": "platform_resource",
                                 "grouping": "deployment",
-                                "original_grouping": "deployment"
+                                "original_grouping": "deployment",
+                                "config_constraints": {
+                                    "resourceType": "vpc",
+                                    "selection": "multi_select",
+                                    "valueType": "crn"
+                                }
                             },
                             "virtual": false
                         },
                         {
                             "key": "allowed_ip_addresses",
+                            "type": "array",
                             "required": false,
                             "virtual": false,
+                            "default_value": [],
                             "custom_config": {
-                                "type": "textarea",
+                                "type": "array",
                                 "grouping": "deployment",
-                                "original_grouping": "deployment"
+                                "original_grouping": "deployment",
+                                "config_constraints": {
+                                    "type": "string"
+                                }
                             }
                         },
                         {
@@ -341,6 +353,12 @@
                         },
                         {
                             "key": "key_protect_plan",
+                            "required": false,
+                            "virtual": false,
+                            "hidden": true
+                        },
+                        {
+                            "key": "enforcement_mode",
                             "required": false,
                             "virtual": false,
                             "hidden": true

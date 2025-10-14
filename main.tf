@@ -248,7 +248,6 @@ module "cloud_logs" {
 ##############################################################################
 locals {
   account_id = data.ibm_iam_account_settings.iam_account_settings.account_id
-
   endpoint_context = (
     var.cos_allowed_endpoint_types == "all" ? [
       { name = "endpointType", value = "private" },
@@ -258,27 +257,24 @@ locals {
       { name = "endpointType", value = var.cos_allowed_endpoint_types }
     ] : []
   )
-
-  allowed_vpc_obj       = (var.allowed_vpc != null && var.allowed_vpc != "" && var.allowed_vpc != "-") ? jsondecode(var.allowed_vpc) : null
   allowed_vpc_crns_list = var.allowed_vpc_crns != null ? var.allowed_vpc_crns : []
-  allowed_ip_addresses_list = (
-    var.allowed_ip_addresses != null && var.allowed_ip_addresses != ""
-  ) ? [for ip in split(",", var.allowed_ip_addresses) : trimspace(ip)] : []
-}
+  allowed_vpc_crns      = var.allowed_vpc != null ? var.allowed_vpc : []
+  #Combine both lists into a set to remove duplicates
+  combined_allowed_vpcs = tolist(toset(concat(local.allowed_vpc_crns_list, local.allowed_vpc_crns)))
 
-data "ibm_is_vpc" "single_vpc" {
-  count = (
-    local.allowed_vpc_obj != null &&
-    try(local.allowed_vpc_obj.region, null) == var.region
-  ) ? 1 : 0
+  # Normalize IPs, split comma-separated, and deduplicate
+  normalized_allowed_ips = tolist(toset(
+    var.allowed_ip_addresses != null ?
+    var.allowed_ip_addresses :
+    []
+  ))
 
-  name = local.allowed_vpc_obj.name
-}
+  # Determine if we should create a custom zone
+  use_custom_zone = (
+    length(local.combined_allowed_vpcs) > 0 ||
+    length(local.normalized_allowed_ips) > 0
+  )
 
-locals {
-  allowed_vpc_list = length(data.ibm_is_vpc.single_vpc) > 0 ? [data.ibm_is_vpc.single_vpc[0].crn] : []
-
-  use_custom_zone = length(local.allowed_vpc_list) > 0 || length(local.allowed_vpc_crns_list) > 0 || length(local.allowed_ip_addresses_list) > 0
   create_cbr_rule = local.use_custom_zone
 }
 
@@ -289,13 +285,14 @@ module "cbr_zone" {
   name             = "${local.safe_prefix}${var.allowed_network_zone_name}"
   account_id       = local.account_id
   zone_description = var.zone_description
+
   addresses = concat(
-    [for vpc in local.allowed_vpc_list : { type = "vpc", value = vpc }],
-    [for crn in local.allowed_vpc_crns_list : { type = "vpc", value = crn }],
-    [for ip in local.allowed_ip_addresses_list : { type = "ipAddress", value = ip }]
+    [for vpc in local.combined_allowed_vpcs : { type = "vpc", value = vpc }],
+    [for ip in local.normalized_allowed_ips : { type = "ipAddress", value = ip }]
   )
   excluded_addresses = []
 }
+
 
 locals {
   context_attributes = concat(
@@ -329,7 +326,7 @@ module "cbr_rule" {
   version          = "1.33.2"
   count            = local.create_cbr_rule ? 1 : 0
   rule_description = "CBR rule for COS"
-  enforcement_mode = "enabled"
+  enforcement_mode = var.enforcement_mode
 
   rule_contexts = [
     for ctx in local.context_attributes : {

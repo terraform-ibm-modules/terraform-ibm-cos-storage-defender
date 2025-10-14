@@ -238,7 +238,7 @@ variable "cloud_logs_plan" {
 
 variable "allowed_vpc" {
   description = "List of allowed VPCs. This will restrict access to the bucket from only specifically allowed VPCs.  Entering values in this field will result in the creation of a new network zone."
-  type        = string
+  type        = list(string)
   default     = null
 }
 
@@ -249,37 +249,38 @@ variable "allowed_vpc_crns" {
 }
 
 variable "allowed_ip_addresses" {
-  description = "List of allowed IP addresses. This will restrict access to the bucket from only specifically allowed IP addresses.  Entering values in this field will result in the creation of a new network zone."
-  type        = string
+  description = "List of allowed IPv4 addresses. This will restrict access to the bucket from only specifically allowed IP addresses. Entering values in this field will result in the creation of a new network zone."
+  type        = list(string)
   default     = null
 
   validation {
     condition = (
-      var.allowed_ip_addresses == null || var.allowed_ip_addresses == "" ||
+      var.allowed_ip_addresses == null ||
       alltrue([
-        for ip in split(",", var.allowed_ip_addresses != null ? var.allowed_ip_addresses : "") :
+        for ip in var.allowed_ip_addresses :
         can(regex(
-          "^(" +
-          "((25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})" + # IPv4
-          "|" +
-          "([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}" + # full IPv6
-          "|" +
-          "([0-9a-fA-F]{1,4}:){1,7}:|" + # IPv6 shorthand "::"
-          "([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|" +
-          "([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|" +
-          "([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|" +
-          "([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|" +
-          "([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|" +
-          "[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|" +
-          ":((:[0-9a-fA-F]{1,4}){1,7}|:)" +
-          ")$", trimspace(ip)
+          "^((25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})$",
+          trimspace(ip)
         ))
       ])
     )
-    error_message = "allowed_ip_addresses must be a comma-separated list of valid IPv4 or IPv6 addresses."
+    error_message = "allowed_ip_addresses must be a list of valid IPv4 addresses (e.g., 192.168.1.1)."
   }
 }
 
+variable "enforcement_mode" {
+  type        = string
+  description = "(String) The rule enforcement mode"
+  default     = "disabled"
+  validation {
+    condition = anytrue([
+      var.enforcement_mode == "enabled",
+      var.enforcement_mode == "disabled",
+      var.enforcement_mode == "report"
+    ])
+    error_message = "Valid values for enforcement mode can be 'enabled', 'disabled' and 'report'"
+  }
+}
 
 variable "allowed_network_zone_name" {
   description = "Name used for new network zone created if values are entered in the allowed_ip_addresses, allowed_vpc, or allowed_vpc_crns fields"
