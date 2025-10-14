@@ -259,6 +259,7 @@ locals {
   )
   allowed_vpc_crns_list = var.allowed_vpc_crns != null ? var.allowed_vpc_crns : []
   allowed_vpc_crns      = var.allowed_vpc != null ? var.allowed_vpc : []
+
   #Combine both lists into a set to remove duplicates
   combined_allowed_vpcs = tolist(toset(concat(local.allowed_vpc_crns_list, local.allowed_vpc_crns)))
 

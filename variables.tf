@@ -271,7 +271,7 @@ variable "allowed_ip_addresses" {
 variable "enforcement_mode" {
   type        = string
   description = "(String) The rule enforcement mode"
-  default     = "disabled"
+  default     = "enabled"
   validation {
     condition = anytrue([
       var.enforcement_mode == "enabled",
