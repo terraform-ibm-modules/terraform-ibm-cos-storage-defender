@@ -240,18 +240,21 @@ variable "allowed_vpc" {
   description = "List of allowed VPCs. This will restrict access to the bucket from only specifically allowed VPCs.  Entering values in this field will result in the creation of a new network zone."
   type        = list(string)
   default     = null
+  nullable    = true
 }
 
 variable "allowed_vpc_crns" {
   description = "Comma-separated list of allowed VPC CRNs. This will restrict access to the bucket from only specifically allowed VPC CRNs.  Entering values in this field will result in the creation of a new network zone."
   type        = list(string)
   default     = null
+  nullable    = true
 }
 
 variable "allowed_ip_addresses" {
   description = "List of allowed IPv4 addresses. This will restrict access to the bucket from only specifically allowed IP addresses. Entering values in this field will result in the creation of a new network zone."
   type        = list(string)
   default     = null
+  nullable    = true
 
   validation {
     condition = (
