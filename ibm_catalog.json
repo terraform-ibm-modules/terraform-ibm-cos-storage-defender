@@ -252,7 +252,7 @@
                         },
                         {
                             "key": "allowed_vpc",
-                            "type": "array",
+                            "type": "string",
                             "default_value": "",
                             "required": false,
                             "custom_config": {
