@@ -102,6 +102,7 @@
                         },
                         {
                             "key": "prefix",
+                            "default_value": "__NULL__",
                             "value_constraints": [
                                 {
                                     "type": "regex",
