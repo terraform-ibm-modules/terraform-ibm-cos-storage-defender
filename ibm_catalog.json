@@ -252,8 +252,6 @@
                         },
                         {
                             "key": "allowed_vpc",
-                            "type": "string",
-                            "default_value": "",
                             "required": false,
                             "custom_config": {
                                 "type": "platform_resource",
