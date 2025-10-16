@@ -258,7 +258,7 @@ locals {
     ] : []
   )
   allowed_vpc_crns_list = var.allowed_vpc_crns != null ? var.allowed_vpc_crns : []
-  allowed_vpc_crns      = var.allowed_vpc != null ? var.allowed_vpc : []
+  allowed_vpc_crns      = var.allowed_vpc != null || var.allowed_vpc != "" ? var.allowed_vpc : []
 
   combined_allowed_vpcs = tolist(toset(concat(local.allowed_vpc_crns_list, local.allowed_vpc_crns)))
 
