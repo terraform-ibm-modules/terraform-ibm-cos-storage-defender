@@ -253,7 +253,7 @@
                         {
                             "key": "allowed_vpc",
                             "type": "array",
-                            "default_value": [],
+                            "default_value": "__NULL__",
                             "required": false,
                             "custom_config": {
                                 "type": "platform_resource",
