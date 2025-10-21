@@ -248,6 +248,7 @@ module "cloud_logs" {
 ##############################################################################
 locals {
   account_id = data.ibm_iam_account_settings.iam_account_settings.account_id
+
   endpoint_context = (
     var.cos_allowed_endpoint_types == "all" ? [
       { name = "endpointType", value = "private" },
@@ -257,15 +258,21 @@ locals {
       { name = "endpointType", value = var.cos_allowed_endpoint_types }
     ] : []
   )
+
   allowed_vpc_crns_list = var.allowed_vpc_crns != null ? var.allowed_vpc_crns : []
-  allowed_vpc_crns      = var.allowed_vpc != null || var.allowed_vpc != "" ? var.allowed_vpc : []
+
+  # Normalize allowed_vpc string safely
+  allowed_vpc_crns = try(
+    (
+      var.allowed_vpc == "-" || var.allowed_vpc == "" ? [] : split(",", var.allowed_vpc)
+    ),
+    []
+  )
 
   combined_allowed_vpcs = tolist(toset(concat(local.allowed_vpc_crns_list, local.allowed_vpc_crns)))
 
   normalized_allowed_ips = tolist(toset(
-    var.allowed_ip_addresses != null ?
-    var.allowed_ip_addresses :
-    []
+    var.allowed_ip_addresses != null ? var.allowed_ip_addresses : []
   ))
 
   use_custom_zone = (
@@ -275,6 +282,7 @@ locals {
 
   create_cbr_rule = local.use_custom_zone
 }
+
 
 module "cbr_zone" {
   count            = local.create_cbr_rule ? 1 : 0
