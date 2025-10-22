@@ -260,7 +260,7 @@ variable "allowed_ip_addresses" {
     condition = (
       var.allowed_ip_addresses == null ||
       alltrue([
-        for ip in var.allowed_ip_addresses :
+        for ip in var.allowed_ip_addresses != null ? var.allowed_ip_addresses : [] :
         can(regex(
           "^((25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})$",
           trimspace(ip)
