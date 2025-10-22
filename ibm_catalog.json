@@ -260,7 +260,7 @@
                 "original_grouping": "deployment",
                 "config_constraints": {
                   "resourceType": "vpc",
-                  "selection": "multi_select",
+                  "selection": "single_select",
                   "valueType": "crn"
                 }
               },

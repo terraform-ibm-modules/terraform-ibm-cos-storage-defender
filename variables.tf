@@ -237,7 +237,7 @@ variable "cloud_logs_plan" {
 ##############################################################################
 
 variable "allowed_vpc" {
-  description = "List of allowed VPCs. This will restrict access to the bucket from only specifically allowed VPCs.  Entering values in this field will result in the creation of a new network zone."
+  description = "List of allowed VPC. This will restrict access to the bucket from only specifically allowed VPC.  Entering values in this field will result in the creation of a new network zone."
   type        = string
   default     = "-"
   nullable    = true

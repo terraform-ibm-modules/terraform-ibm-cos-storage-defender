@@ -249,6 +249,7 @@ module "cloud_logs" {
 locals {
   account_id = data.ibm_iam_account_settings.iam_account_settings.account_id
 
+  # Handle endpoint context for COS
   endpoint_context = (
     var.cos_allowed_endpoint_types == "all" ? [
       { name = "endpointType", value = "private" },
@@ -259,22 +260,24 @@ locals {
     ] : []
   )
 
+  # Normalize allowed_vpc (single CRN string or "-")
   allowed_vpc_crns_list = var.allowed_vpc_crns != null ? var.allowed_vpc_crns : []
-
-  # Normalize allowed_vpc string safely
   allowed_vpc_crns = try(
     (
-      var.allowed_vpc == "-" || var.allowed_vpc == "" ? [] : split(",", var.allowed_vpc)
+      var.allowed_vpc == "-" || var.allowed_vpc == "" ? [] : [var.allowed_vpc]
     ),
     []
   )
 
+  # Merge allowed_vpc_crns_list and allowed_vpc_crns
   combined_allowed_vpcs = tolist(toset(concat(local.allowed_vpc_crns_list, local.allowed_vpc_crns)))
 
+  # Normalize IP addresses
   normalized_allowed_ips = tolist(toset(
     var.allowed_ip_addresses != null ? var.allowed_ip_addresses : []
   ))
 
+  # Determine whether to create a custom network zone
   use_custom_zone = (
     length(local.combined_allowed_vpcs) > 0 ||
     length(local.normalized_allowed_ips) > 0
@@ -283,7 +286,9 @@ locals {
   create_cbr_rule = local.use_custom_zone
 }
 
-
+##############################################################################
+# CBR Zone
+##############################################################################
 module "cbr_zone" {
   count            = local.create_cbr_rule ? 1 : 0
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module"
@@ -299,7 +304,9 @@ module "cbr_zone" {
   excluded_addresses = []
 }
 
-
+##############################################################################
+# CBR Rule
+##############################################################################
 locals {
   context_attributes = concat(
     local.endpoint_context,
