@@ -263,19 +263,19 @@ locals {
   # Normalize allowed_vpc (single CRN string or "-")
   allowed_vpc_crns_list = var.allowed_vpc_crns != null ? var.allowed_vpc_crns : []
   allowed_vpc_crns = try(
-    (
-      var.allowed_vpc == "-" || var.allowed_vpc == "" ? [] : [var.allowed_vpc]
-    ),
+    (var.allowed_vpc == "-" || var.allowed_vpc == "" ? [] : [var.allowed_vpc]),
     []
   )
 
-  # Merge allowed_vpc_crns_list and allowed_vpc_crns
-  combined_allowed_vpcs = tolist(toset(concat(local.allowed_vpc_crns_list, local.allowed_vpc_crns)))
+  # Merge allowed_vpc_crns_list and allowed_vpc_crns, filter out null/empty, and deduplicate
+  combined_allowed_vpcs = toset([
+    for v in concat(local.allowed_vpc_crns_list, local.allowed_vpc_crns) : v if v != null && v != ""
+  ])
 
-  # Normalize IP addresses
-  normalized_allowed_ips = tolist(toset(
-    var.allowed_ip_addresses != null ? var.allowed_ip_addresses : []
-  ))
+  # Normalize IP addresses, filter out null/empty, deduplicate
+  normalized_allowed_ips = toset([
+    for ip in var.allowed_ip_addresses != null ? var.allowed_ip_addresses : [] : ip if ip != null && ip != ""
+  ])
 
   # Determine whether to create a custom network zone
   use_custom_zone = (
