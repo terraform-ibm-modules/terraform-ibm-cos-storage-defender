@@ -292,7 +292,7 @@ locals {
 module "cbr_zone" {
   count            = local.create_cbr_rule ? 1 : 0
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module"
-  version          = "1.33.6"
+  version          = "1.33.7"
   name             = "${local.safe_prefix}${var.allowed_network_zone_name}"
   account_id       = local.account_id
   zone_description = var.zone_description
@@ -336,7 +336,7 @@ locals {
 
 module "cbr_rule" {
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module"
-  version          = "1.33.6"
+  version          = "1.33.7"
   count            = local.create_cbr_rule ? 1 : 0
   rule_description = "CBR rule for COS"
   enforcement_mode = var.enforcement_mode
