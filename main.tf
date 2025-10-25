@@ -58,7 +58,7 @@ locals {
 
 module "kms" {
   source            = "terraform-ibm-modules/key-protect/ibm"
-  version           = "2.10.16"
+  version           = "2.10.17"
   key_protect_name  = local.key_protect_name
   region            = var.region
   resource_group_id = module.resource_group.resource_group_id
@@ -217,7 +217,7 @@ resource "ibm_iam_authorization_policy" "cos_policy" {
 
 module "cloud_logs" {
   source                        = "terraform-ibm-modules/cloud-logs/ibm"
-  version                       = "1.9.3"
+  version                       = "1.9.5"
   depends_on                    = [ibm_iam_authorization_policy.cos_policy]
   instance_name                 = local.cloud_log_instance_name
   plan                          = var.cloud_logs_plan
