@@ -54,7 +54,7 @@
           "name": "fully-configurable",
           "index": 1,
           "install_type": "fullstack",
-          "terraform_version": "1.10.5",
+          "terraform_version": "1.12.2",
           "compliance": {
             "authority": "scc-v3",
             "profiles": [
