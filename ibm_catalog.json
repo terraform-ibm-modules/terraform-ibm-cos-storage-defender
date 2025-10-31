@@ -499,7 +499,8 @@
                 "crn:v1:bluemix:public:iam::::role:Writer"
               ]
             }
-          ]
+          ],
+          "ignore_readme": true
         }
       ]
     }
