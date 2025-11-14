@@ -55,15 +55,6 @@
           "index": 1,
           "install_type": "fullstack",
           "terraform_version": "1.12.2",
-          "compliance": {
-            "authority": "scc-v3",
-            "profiles": [
-              {
-                "profile_name": "IBM Cloud Framework for Financial Services",
-                "profile_version": "1.7.0"
-              }
-            ]
-          },
           "architecture": {
             "features": [
               {
