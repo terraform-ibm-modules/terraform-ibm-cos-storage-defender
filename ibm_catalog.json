@@ -178,6 +178,13 @@
               "key": "bucket_name",
               "display_name": "cos_bucket_name",
               "required": false,
+              "value_constraints": [
+                {
+                  "type": "regex",
+                  "description": "The bucket name must be empty (to use the default) or 3–63 characters long, start and end with a lowercase letter or number, and may contain '.' or '-' but not consecutive or mixed dots and hyphens (e.g., '..', '--', '.-', '-.').",
+                  "value": "^(?!.*(\\.\\.|--|\\. -|-\\.))[a-z0-9](?:[a-z0-9.-]{1,61})[a-z0-9]$"
+                }
+              ],
               "virtual": false
             },
             {
@@ -275,6 +282,13 @@
             {
               "key": "allowed_network_zone_name",
               "required": false,
+              "value_constraints": [
+                {
+                  "type": "regex",
+                  "description": "Value should be a valid network zone name with 1-128 characters",
+                  "value": "^[0-9A-Za-z _-]{1,128}$"
+                }
+              ],
               "virtual": false
             },
             {
