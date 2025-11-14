@@ -190,7 +190,7 @@ variable "bucket_name" {
 
 variable "bucket_storage_class" {
   type        = string
-  description = "The storage class of the new Cloud Object Storage bucket. Learn More: https://cloud.ibm.com/objectstorage/create#pricing"
+  description = "The storage class of the new Cloud Object Storage bucket. [Learn more](https://cloud.ibm.com/objectstorage/create#pricing)"
   default     = "smart"
 
   validation {
@@ -200,7 +200,7 @@ variable "bucket_storage_class" {
 }
 
 variable "object_locking_enabled" {
-  description = "Enable object lock to keep data immutable for the retention period. This will also enable object versioning on the bucket. Learn More: https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-immutable"
+  description = "Enable object lock to keep data immutable for the retention period. This will also enable object versioning on the bucket. [Learn More](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-immutable)"
   type        = bool
   default     = false
 }
@@ -336,7 +336,7 @@ variable "cloud_logs_plan" {
 ##############################################################################
 
 variable "allowed_vpc" {
-  description = "List of allowed VPCs. This will restrict access to the bucket from only specifically allowed VPCs. Entering values in this field will result in the creation of a new network zone. Learn more: https://cloud.ibm.com/objectstorage/create#pricing"
+  description = "List of allowed VPCs. This will restrict access to the bucket from only specifically allowed VPCs. Entering values in this field will result in the creation of a new network zone. [Learn more](https://cloud.ibm.com/objectstorage/create#pricing)"
   type        = string
   default     = null
   nullable    = true
