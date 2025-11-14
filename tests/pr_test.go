@@ -27,9 +27,8 @@ func TestFullyConfigurable(t *testing.T) {
 		Region:  "au-syd",
 		Prefix:  prefix,
 		TarIncludePatterns: []string{
-			"examples/advanced/*.tf", // example code
-			"*.tf",                   // root-level *.tf
-			"modules/**/*.tf",        // all submodules
+			"*.tf",            // root-level *.tf
+			"modules/**/*.tf", // all submodules
 		},
 		TemplateFolder:         fullyConfigFlavorDir,
 		DeleteWorkspaceOnFail:  false,
@@ -47,9 +46,33 @@ func TestFullyConfigurable(t *testing.T) {
 }
 
 // ------------------------------------------------------------------
-// Placeholder test for future upgrade / backward compatibility checks
+// test for upgrade / backward compatibility checks
 // ------------------------------------------------------------------
 
-func TestUpgrade(t *testing.T) {
-	t.Skip("Skipping upgrade test — no previous version to test against yet")
+func TestRunFullyConfigurableUpgrade(t *testing.T) {
+	t.Parallel()
+	prefix := "upgrade-da"
+	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
+		Testing: t,
+		Region:  "au-syd",
+		Prefix:  prefix,
+		TarIncludePatterns: []string{
+			"*.tf",            // root-level *.tf
+			"modules/**/*.tf", // all submodules
+		},
+		TemplateFolder:         fullyConfigFlavorDir,
+		DeleteWorkspaceOnFail:  false,
+		WaitJobCompleteMinutes: 120,
+	})
+
+	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
+		{Name: "region", Value: options.Region, DataType: "string"},
+		{Name: "prefix", Value: options.Prefix, DataType: "string"},
+	}
+
+	err := options.RunSchematicUpgradeTest()
+	if !options.UpgradeTestSkipped {
+		assert.Nil(t, err, "This should not have errored")
+	}
 }

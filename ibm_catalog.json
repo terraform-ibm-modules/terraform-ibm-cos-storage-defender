@@ -25,7 +25,7 @@
       "short_description": "Create a customizable Cyber Vault bucket with configurations for a secure, isolated environment for storing and protecting data.",
       "long_description": "This architecture utilizes object storage for immutable and indelible backup copies, offering strong protection against cyberattacks and ransomware. It involves restricting access to the vault data and making it resistant to threats affecting the primary system. ",
       "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/blob/main/README.md",
-      "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/main/images/StorageDefender_dark",
+      "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/refs/heads/main/images/StorageDefender_dark.svg",
       "features": [
         {
           "title": "Cloud Object Storage instance",
@@ -55,15 +55,6 @@
           "index": 1,
           "install_type": "fullstack",
           "terraform_version": "1.12.2",
-          "compliance": {
-            "authority": "scc-v3",
-            "profiles": [
-              {
-                "profile_name": "IBM Cloud Framework for Financial Services",
-                "profile_version": "1.7.0"
-              }
-            ]
-          },
           "architecture": {
             "features": [
               {
@@ -86,7 +77,7 @@
             "diagrams": [
               {
                 "diagram": {
-                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/feature-test-example/reference-architectures/COS%20Defender%20DA%20architectual%20diagram.svg",
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/refs/heads/main/reference-architectures/COS%20Defender%20DA%20architectual%20diagram.svg",
                   "caption": "Cloud Object Storage Cyber Vault for Storage Defender",
                   "type": "image/svg+xml"
                 },
@@ -187,6 +178,13 @@
               "key": "bucket_name",
               "display_name": "cos_bucket_name",
               "required": false,
+              "value_constraints": [
+                {
+                  "type": "regex",
+                  "description": "The bucket name must be empty (to use the default) or 3–63 characters long, start and end with a lowercase letter or number, and may contain '.' or '-' but not consecutive or mixed dots and hyphens (e.g., '..', '--', '.-', '-.').",
+                  "value": "^(?!.*(\\.\\.|--|\\. -|-\\.))[a-z0-9](?:[a-z0-9.-]{1,61})[a-z0-9]$"
+                }
+              ],
               "virtual": false
             },
             {
@@ -284,6 +282,13 @@
             {
               "key": "allowed_network_zone_name",
               "required": false,
+              "value_constraints": [
+                {
+                  "type": "regex",
+                  "description": "Value should be a valid network zone name with 1-128 characters",
+                  "value": "^[0-9A-Za-z _-]{1,128}$"
+                }
+              ],
               "virtual": false
             },
             {
