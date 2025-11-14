@@ -25,7 +25,7 @@
       "short_description": "Create a customizable Cyber Vault bucket with configurations for a secure, isolated environment for storing and protecting data.",
       "long_description": "This architecture utilizes object storage for immutable and indelible backup copies, offering strong protection against cyberattacks and ransomware. It involves restricting access to the vault data and making it resistant to threats affecting the primary system. ",
       "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/blob/main/README.md",
-      "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/main/images/StorageDefender_dark",
+      "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/refs/heads/main/images/StorageDefender_dark.svg",
       "features": [
         {
           "title": "Cloud Object Storage instance",
@@ -86,7 +86,7 @@
             "diagrams": [
               {
                 "diagram": {
-                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/feature-test-example/reference-architectures/COS%20Defender%20DA%20architectual%20diagram.svg",
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/refs/heads/main/reference-architectures/COS%20Defender%20DA%20architectual%20diagram.svg",
                   "caption": "Cloud Object Storage Cyber Vault for Storage Defender",
                   "type": "image/svg+xml"
                 },

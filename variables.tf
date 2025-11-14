@@ -9,10 +9,29 @@ variable "ibmcloud_api_key" {
 }
 
 variable "region" {
-  description = "The IBM Cloud region where all resources (COS instance and buckets, Key Protect, Cloud Logs, etc.) will be provisioned. If specifying cross-region or single-site locations for COS buckets, set `cross_region_location` and `single_site_location` to `null`."
+  description = "The IBM Cloud region where all resources (COS instance and buckets, Key Protect, Cloud Logs, etc.) will be provisioned. "
   type        = string
   default     = "us-east"
+
+  validation {
+    condition = contains([
+      "jp-osa",
+      "jp-tok",
+      "eu-de",
+      "eu-gb",
+      "eu-es",
+      "us-south",
+      "ca-mon",
+      "ca-tor",
+      "us-east",
+      "br-sao",
+      "au-syd"
+    ], var.region)
+
+    error_message = "Invalid region. Allowed values are: jp-osa, jp-tok, eu-de, eu-gb, eu-es, us-south, ca-mon, ca-tor, us-east, br-sao, au-syd."
+  }
 }
+
 
 variable "prefix" {
   type        = string
@@ -47,14 +66,13 @@ variable "existing_resource_group_name" {
   default     = null
 }
 
-
 ##############################################################################
 # COS instance variables
 ##############################################################################
 
 variable "cos_instance_name" {
   type        = string
-  description = "The name for the IBM Cloud Object Storage instance provisioned by this module. If a prefix is provided via the 'prefix' variable, it will be prepended to this value in the format <prefix>-value. Applies only if `create_cos_instance` is true."
+  description = "The name for the IBM Cloud Object Storage instance provisioned by this module. If a prefix is provided via the 'prefix' variable, it will be prepended to this value in the format <prefix>-value."
   default     = "cos-cybervault"
 }
 
@@ -62,12 +80,33 @@ variable "role" {
   description = "This is the role that will be granted to the service credential used by Defender when making requests to COS. The Writer role has been selected by default since it contains the minimum set of permissions needed by Defender."
   type        = string
   default     = "Writer"
+
+  validation {
+    condition = contains(
+      [
+        "Writer",
+        "Reader",
+        "Manager",
+        "Content Reader",
+        "Object Reader",
+        "Object Writer",
+        "NONE"
+      ],
+      var.role
+    )
+    error_message = "role must be one of: Writer, Reader, Manager, Content Reader, Object Reader, Object Writer, NONE."
+  }
 }
+
 
 variable "cos_location" {
   description = "The location for the Object Storage instance."
   type        = string
   default     = "global"
+  validation {
+    condition     = var.cos_location == "global"
+    error_message = "cos_location must be set to \"global\"."
+  }
 }
 
 ##############################################################################
@@ -130,13 +169,28 @@ variable "kms_endpoint_type" {
 
 variable "bucket_name" {
   type        = string
-  description = "The name for the IBM Cloud Object Storage bucket provisioned by this solution. A default name has been provided. The instance will be named with the prefix plus this value in the format <prefix>-value. The bucket namewill also be appended with a randomly generated string of unique characters."
+  description = "The name for the IBM Cloud Object Storage bucket provisioned by this solution. A default name has been provided. The instance will be named with the prefix plus this value in the format <prefix>-value. The bucket name will also be appended with a randomly generated string of unique characters."
   default     = "cybervault-bucket"
+
+  validation {
+    condition = (
+      var.bucket_name == "" ||
+      (
+        can(regex("^[a-z0-9][a-z0-9.-]*[a-z0-9]$", var.bucket_name))
+        && length(var.bucket_name) >= 3
+        && length(var.bucket_name) <= 63
+        && !can(regex("(\\.\\.|--|\\.-|-\\.)", var.bucket_name))
+      )
+    )
+
+    error_message = "The bucket name must be empty (to use the default) or 3–63 characters long, start and end with a lowercase letter or number, and may contain '.' or '-' but not consecutive or mixed dots and hyphens (e.g., '..', '--', '.-', '-.')."
+  }
+
 }
 
 variable "bucket_storage_class" {
   type        = string
-  description = "The storage class of the new bucket. Required only if `create_cos_bucket` is true. Possible values: `standard`, `vault`, `cold`, `smart`, `onerate_active`."
+  description = "The storage class of the new Cloud Object Storage bucket. Learn More: https://cloud.ibm.com/objectstorage/create#pricing"
   default     = "smart"
 
   validation {
@@ -146,21 +200,35 @@ variable "bucket_storage_class" {
 }
 
 variable "object_locking_enabled" {
-  description = "Whether to create an object lock configuration. Applies only if `object_versioning_enabled` and `create_cos_bucket` are true."
+  description = "Enable object lock to keep data immutable for the retention period. This will also enable object versioning on the bucket. Learn More: https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-immutable"
   type        = bool
   default     = false
 }
 
 variable "object_lock_duration_years" {
-  description = "The number of years for the object lock duration. If you specify a number of years, do not specify a value for `object_lock_duration_days`. Applies only if `create_cos_bucket` is set to `true`."
+  description = "The number of years for the object lock duration. If you specify a number of years, do not specify a value for `object_lock_duration_days`."
   type        = number
   default     = 1
+
+  validation {
+    condition = (
+      (var.object_locking_enabled == true && var.object_lock_duration_years >= 1 && var.object_lock_duration_years <= 1000) ||
+      (var.object_locking_enabled == false && var.object_lock_duration_years >= 0 && var.object_lock_duration_years <= 1000)
+    )
+    error_message = "If object_locking_enabled is true, object_lock_duration_years must be between 1 and 1000. If object_locking_enabled is false, the value must be 0 or greater (no negative values allowed)."
+  }
 }
+
 
 variable "hard_quota" {
   type        = number
-  description = "The hard quota (in GB) for the bucket. Set to 0 for unlimited."
+  description = "The hard quota (in GB) for the bucket. Set to 0 for unlimited. May be null."
   default     = 1024
+
+  validation {
+    condition     = var.hard_quota == null || try(var.hard_quota >= 0, false)
+    error_message = "hard_quota cannot be negative."
+  }
 }
 
 variable "force_delete" {
@@ -194,12 +262,39 @@ variable "logs_bucket_name" {
   type        = string
   description = "The name for the new Object Storage logs bucket. If a prefix is provided via the 'prefix' variable, it will be prepended to this value in the format <prefix>-value. A unique suffix may also be appended."
   default     = "logs-bucket"
+  validation {
+    condition = (
+      var.logs_bucket_name == "" ||
+      (
+        can(regex("^[a-z0-9][a-z0-9.-]*[a-z0-9]$", var.logs_bucket_name))
+        && length(var.logs_bucket_name) >= 3
+        && length(var.logs_bucket_name) <= 63
+        && !can(regex("(\\.\\.|--|\\.-|-\\.)", var.logs_bucket_name))
+      )
+    )
+
+    error_message = "The bucket name must be empty (to use the default) or 3–63 characters long, start and end with a lowercase letter or number, and may contain '.' or '-' but not consecutive or mixed dots and hyphens (e.g., '..', '--', '.-', '-.')."
+  }
+
 }
 
 variable "metrics_bucket_name" {
   type        = string
   description = "The name for the new Object Storage metrics bucket. If a prefix is provided via the 'prefix' variable, it will be prepended to this value in the format <prefix>-value. A unique suffix may also be appended."
   default     = "metrics-bucket"
+  validation {
+    condition = (
+      var.metrics_bucket_name == "" ||
+      (
+        can(regex("^[a-z0-9][a-z0-9.-]*[a-z0-9]$", var.metrics_bucket_name))
+        && length(var.metrics_bucket_name) >= 3
+        && length(var.metrics_bucket_name) <= 63
+        && !can(regex("(\\.\\.|--|\\.-|-\\.)", var.metrics_bucket_name))
+      )
+    )
+
+    error_message = "The bucket name must be empty (to use the default) or 3–63 characters long, start and end with a lowercase letter or number, and may contain '.' or '-' but not consecutive or mixed dots and hyphens (e.g., '..', '--', '.-', '-.')."
+  }
 }
 
 variable "cloud_logs_bucket_class" {
@@ -217,6 +312,10 @@ variable "retention_period" {
   description = "Retention period (in days) for logs and metrics stored in Cloud Logs."
   type        = number
   default     = 7
+  validation {
+    condition     = contains([7, 14, 30, 60, 90], var.retention_period)
+    error_message = "Valid values 'retention_period' are: 7, 14, 30, 60, 90"
+  }
 }
 
 variable "cloud_logs_plan" {
@@ -237,18 +336,49 @@ variable "cloud_logs_plan" {
 ##############################################################################
 
 variable "allowed_vpc" {
-  description = "List of allowed VPC. This will restrict access to the bucket from only specifically allowed VPC.  Entering values in this field will result in the creation of a new network zone."
+  description = "List of allowed VPCs. This will restrict access to the bucket from only specifically allowed VPCs. Entering values in this field will result in the creation of a new network zone. Learn more: https://cloud.ibm.com/objectstorage/create#pricing"
   type        = string
   default     = null
   nullable    = true
+
+  validation {
+    condition = try(
+      var.allowed_vpc == null ||
+      trim(var.allowed_vpc) == "" ||
+      trim(var.allowed_vpc) == "-" ||
+      can(regex(
+        "^crn:v[0-9]:bluemix:(public|private):is:[a-z0-9-]+:a/[0-9a-f]{32}::vpc:[a-z0-9-]+$",
+        var.allowed_vpc
+      )),
+      false
+    )
+    error_message = "allowed_vpc must be null, empty, '-', or a valid VPC CRN (example: crn:v1:bluemix:public:is:us-south:a/<account-id>::vpc:<vpc-id>)."
+  }
 }
 
 variable "allowed_vpc_crns" {
-  description = "Comma-separated list of allowed VPC CRNs. This will restrict access to the bucket from only specifically allowed VPC CRNs.  Entering values in this field will result in the creation of a new network zone."
+  description = "List of allowed VPC CRNs. Restricts access to the bucket. Set to null for no restriction."
   type        = list(string)
   default     = null
   nullable    = true
+
+  validation {
+    condition = try(
+      var.allowed_vpc_crns == null ||
+      length(var.allowed_vpc_crns) == 0 ||
+      alltrue([
+        for crn in var.allowed_vpc_crns :
+        can(regex(
+          "^crn:v[0-9]:bluemix:(public|private):is:[a-z0-9-]+:a/[0-9a-f]{32}::vpc:[a-z0-9-]+$",
+          crn
+        ))
+      ]),
+      false
+    )
+    error_message = "Each entry in allowed_vpc_crns must be a valid VPC CRN, for example: crn:v1:bluemix:public:is:us-south:a/<account-id>::vpc:<vpc-id>."
+  }
 }
+
 
 variable "allowed_ip_addresses" {
   description = "List of allowed IPv4 addresses. This will restrict access to the bucket from only specifically allowed IP addresses. Entering values in this field will result in the creation of a new network zone."
@@ -274,7 +404,7 @@ variable "allowed_ip_addresses" {
 variable "enforcement_mode" {
   type        = string
   description = "(String) The rule enforcement mode"
-  default     = "enabled"
+  default     = "disabled"
   validation {
     condition = anytrue([
       var.enforcement_mode == "enabled",
@@ -289,6 +419,17 @@ variable "allowed_network_zone_name" {
   description = "Name used for new network zone created if values are entered in the allowed_ip_addresses, allowed_vpc, or allowed_vpc_crns fields"
   type        = string
   default     = "cyber-zone"
+  validation {
+    condition = anytrue([
+      var.allowed_network_zone_name == null,
+      alltrue([
+        can(length(var.allowed_network_zone_name) >= 1),
+        can(length(var.allowed_network_zone_name) <= 128),
+        can(regex("^[0-9A-Za-z \\-_]+$", var.allowed_network_zone_name))
+      ])
+    ])
+    error_message = "Value should be a valid account id with 1-128 characters"
+  }
 }
 
 variable "cos_allowed_endpoint_types" {
