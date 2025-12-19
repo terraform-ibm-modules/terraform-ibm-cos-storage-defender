@@ -32,16 +32,12 @@
           "description": "Create and configures an IBM Cloud Object Storage instance."
         },
         {
-          "title": "Cloud Object Storage bucket",
-          "description": "Supports both cross-regional and regional bucket creation and configuration."
+          "description": "Supports regional bucket creation and configuration.",
+          "title": "Cloud Object Storage bucket"
         },
         {
           "title": "Data encryption",
           "description": "Encrypt your data using the default encryption model or use IBM Key Protect or IBM Hyper Protect Crypto Services for full control over the data encryption keys used. [Learn more](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-encryption)."
-        },
-        {
-          "title": "Service credentials",
-          "description": "Optionally create and configure Object Storage service credentials for your instance. Optionally choose to [configure IBM Cloud® Secrets Manager to manage the service credentials](https://cloud.ibm.com/docs/secrets-manager?topic=secrets-manager-service-credentials&interface=terraform)."
         },
         {
           "title": "Context-based restrictions",
