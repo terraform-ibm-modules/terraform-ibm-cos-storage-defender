@@ -1,6 +1,6 @@
-# Terraform modules template project
+# Cloud Object Storage Cyber Vault for Storage Defender DA
 
-[![Incubating (Not yet consumable)](https://img.shields.io/badge/status-Incubating%20(Not%20yet%20consumable)-red)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
+[![Stable (With quality checks)](https://img.shields.io/badge/Status-Stable%20(With%20quality%20checks)-green)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
 [![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-cos-storage-defender?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-cos-storage-defender/releases/latest)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
@@ -10,6 +10,9 @@ This Terraform configuration provisions a secure IBM Cloud Object Storage enviro
 It automates creation of COS buckets (CyberVault, Logs, Metrics) and manages encryption keys and IAM policies.
 Designed to ensure data protection, compliance, and controlled network access within IBM Cloud.
 
+> [!NOTE]
+> This solution is not intended to be called by one or more other modules because it contains a provider configurations. They are not compatible with the `for_each`, `count`, and `depends_on` arguments. For more information see [Providers Within Modules](https://developer.hashicorp.com/terraform/language/modules/develop/providers).
+
 <!-- BEGIN OVERVIEW HOOK -->
 ## Overview
 * [terraform-ibm-cos-storage-defender](#terraform-ibm-cos-storage-defender)
@@ -18,63 +21,24 @@ Designed to ensure data protection, compliance, and controlled network access wi
 
 ## terraform-ibm-cos-storage-defender
 
-### Usage
-
-
-```hcl
-terraform {
-  required_version = ">= 1.9.0"
-  required_providers {
-    ibm = {
-      source  = "IBM-Cloud/ibm"
-      version = "X.Y.Z"  # Lock into a provider version that satisfies the module constraints
-    }
-  }
-}
-
-locals {
-    region = "us-south"
-}
-
-provider "ibm" {
-  ibmcloud_api_key = "XXXXXXXXXX"  # replace with apikey value
-  region           = local.region
-}
-
-module "module_template" {
-  source            = "terraform-ibm-modules/<replace>/ibm"
-  version           = "X.Y.Z" # Replace "X.Y.Z" with a release version to lock into a specific release
-  region            = local.region
-  name              = "instance-name"
-  resource_group_id = "xxXXxxXXxXxXXXXxxXxxxXXXXxXXXXX" # Replace with the actual ID of resource group to use
-}
-```
-
 ### Required access policies
-
 
 The following IBM Cloud IAM permissions are required for the user or service ID running this Terraform configuration:
 
 - Resource Group
   - `Viewer` or `Editor` on the target Resource Group
-
 - Cloud Object Storage (COS)
   - `Manager` on the COS service instance
   - `Manager` on COS buckets
-
 - Key Protect (KMS)
   - `Manager` on the Key Protect instance
   - `Writer` to create and manage encryption keys
-
 - IAM Authorization Policies
   - `Editor` or higher on IAM Access Management to create COS → KMS and Cloud Logs → COS authorization policies
-
 - Cloud Logs
   - `Manager` on the Cloud Logs service instance
-
 - Context-Based Restrictions (CBR)
   - `Administrator` on Context-Based Restrictions to create zones and rules
-
 - VPC / Networking (optional, if using network restrictions)
   - `Viewer` on VPC resources to read VPC details
 
