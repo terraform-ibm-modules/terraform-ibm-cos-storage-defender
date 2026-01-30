@@ -99,16 +99,6 @@ variable "role" {
 }
 
 
-variable "cos_location" {
-  description = "The location for the Object Storage instance."
-  type        = string
-  default     = "global"
-  validation {
-    condition     = var.cos_location == "global"
-    error_message = "cos_location must be set to \"global\"."
-  }
-}
-
 ##############################################################################
 # KMS instance variables
 ##############################################################################

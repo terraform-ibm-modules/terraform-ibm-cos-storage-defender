@@ -48,6 +48,7 @@
         {
           "label": "Fully configurable",
           "name": "fully-configurable",
+          "short_description": "Create a customizable Cyber Vault bucket with configurations that provide a secure, isolated environment for storing and protecting sensitive data.",
           "index": 1,
           "install_type": "fullstack",
           "terraform_version": "1.12.2",
@@ -380,12 +381,6 @@
             },
             {
               "key": "allowed_network",
-              "required": false,
-              "virtual": false,
-              "hidden": true
-            },
-            {
-              "key": "cos_location",
               "required": false,
               "virtual": false,
               "hidden": true

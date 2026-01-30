@@ -57,14 +57,14 @@ Ensure that the API key or IAM identity used has sufficient access to all these 
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_cbr_rule"></a> [cbr\_rule](#module\_cbr\_rule) | terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module | 1.33.7 |
-| <a name="module_cbr_zone"></a> [cbr\_zone](#module\_cbr\_zone) | terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module | 1.33.7 |
-| <a name="module_cloud_logs"></a> [cloud\_logs](#module\_cloud\_logs) | terraform-ibm-modules/cloud-logs/ibm | 1.9.6 |
-| <a name="module_cos"></a> [cos](#module\_cos) | terraform-ibm-modules/cos/ibm | 10.5.2 |
-| <a name="module_cos_buckets"></a> [cos\_buckets](#module\_cos\_buckets) | terraform-ibm-modules/cos/ibm//modules/buckets | 10.5.2 |
-| <a name="module_key"></a> [key](#module\_key) | terraform-ibm-modules/kms-key/ibm | 1.4.2 |
-| <a name="module_kms"></a> [kms](#module\_kms) | terraform-ibm-modules/key-protect/ibm | 2.10.17 |
-| <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform-ibm-modules/resource-group/ibm | 1.4.0 |
+| <a name="module_cbr_rule"></a> [cbr\_rule](#module\_cbr\_rule) | terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module | 1.35.12 |
+| <a name="module_cbr_zone"></a> [cbr\_zone](#module\_cbr\_zone) | terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module | 1.35.12 |
+| <a name="module_cloud_logs"></a> [cloud\_logs](#module\_cloud\_logs) | terraform-ibm-modules/cloud-logs/ibm | 1.10.31 |
+| <a name="module_cos"></a> [cos](#module\_cos) | terraform-ibm-modules/cos/ibm | 10.9.6 |
+| <a name="module_cos_buckets"></a> [cos\_buckets](#module\_cos\_buckets) | terraform-ibm-modules/cos/ibm//modules/buckets | 10.9.6 |
+| <a name="module_key"></a> [key](#module\_key) | terraform-ibm-modules/kms-key/ibm | 1.4.25 |
+| <a name="module_kms"></a> [kms](#module\_kms) | terraform-ibm-modules/key-protect/ibm | 2.10.53 |
+| <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform-ibm-modules/resource-group/ibm | 1.4.7 |
 
 ### Resources
 
@@ -90,7 +90,6 @@ Ensure that the API key or IAM identity used has sufficient access to all these 
 | <a name="input_cloud_logs_plan"></a> [cloud\_logs\_plan](#input\_cloud\_logs\_plan) | The IBM Cloud Logs plan to provision. Available: standard | `string` | `"standard"` | no |
 | <a name="input_cos_allowed_endpoint_types"></a> [cos\_allowed\_endpoint\_types](#input\_cos\_allowed\_endpoint\_types) | Restrict access to the COS bucket through specific endpoint types. By specifying a value here, access to the bucket will be restricted to that endpoint type. Public endpoints are used for traffic originating from outside IBM Cloud. Private endpoints are used for traffic coming from other parts ofIBM Cloud, excluding VPCs. Direct endpoints are used for traffic coming from customer VPCs. | `string` | `"all"` | no |
 | <a name="input_cos_instance_name"></a> [cos\_instance\_name](#input\_cos\_instance\_name) | The name for the IBM Cloud Object Storage instance provisioned by this module. If a prefix is provided via the 'prefix' variable, it will be prepended to this value in the format <prefix>-value. | `string` | `"cos-cybervault"` | no |
-| <a name="input_cos_location"></a> [cos\_location](#input\_cos\_location) | The location for the Object Storage instance. | `string` | `"global"` | no |
 | <a name="input_enforcement_mode"></a> [enforcement\_mode](#input\_enforcement\_mode) | (String) The rule enforcement mode | `string` | `"disabled"` | no |
 | <a name="input_existing_resource_group_name"></a> [existing\_resource\_group\_name](#input\_existing\_resource\_group\_name) | The name of an existing resource group to provision the resources. If not provided the default resource group will be used. | `string` | `null` | no |
 | <a name="input_force_delete"></a> [force\_delete](#input\_force\_delete) | Whether to force delete the key when deleting the resource. | `bool` | `true` | no |
