@@ -28,7 +28,6 @@ module "cos" {
   cos_plan            = local.cos_plan
   create_cos_instance = true
   create_cos_bucket   = false
-  cos_location        = var.cos_location
   resource_group_id   = module.resource_group.resource_group_id
 
   resource_keys = [
