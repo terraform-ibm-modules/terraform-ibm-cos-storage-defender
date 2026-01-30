@@ -386,12 +386,6 @@
               "hidden": true
             },
             {
-              "key": "cos_location",
-              "required": false,
-              "virtual": false,
-              "hidden": true
-            },
-            {
               "key": "kms_endpoint_type",
               "required": false,
               "virtual": false,
