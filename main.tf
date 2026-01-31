@@ -23,7 +23,7 @@ locals {
 
 module "cos" {
   source              = "terraform-ibm-modules/cos/ibm"
-  version             = "10.9.7"
+  version             = "10.9.8"
   cos_instance_name   = local.cos_instance_name
   cos_plan            = local.cos_plan
   create_cos_instance = true
@@ -135,7 +135,7 @@ locals {
 
 module "cos_buckets" {
   source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
-  version = "10.9.7"
+  version = "10.9.8"
 
   for_each = local.bucket_definitions
 
@@ -216,7 +216,7 @@ resource "ibm_iam_authorization_policy" "cos_policy" {
 
 module "cloud_logs" {
   source                        = "terraform-ibm-modules/cloud-logs/ibm"
-  version                       = "1.10.32"
+  version                       = "1.10.33"
   depends_on                    = [ibm_iam_authorization_policy.cos_policy]
   instance_name                 = local.cloud_log_instance_name
   plan                          = var.cloud_logs_plan
@@ -291,7 +291,7 @@ locals {
 module "cbr_zone" {
   count            = local.create_cbr_rule ? 1 : 0
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module"
-  version          = "1.35.12"
+  version          = "1.35.13"
   name             = "${local.safe_prefix}${var.allowed_network_zone_name}"
   account_id       = local.account_id
   zone_description = var.zone_description
@@ -335,7 +335,7 @@ locals {
 
 module "cbr_rule" {
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module"
-  version          = "1.35.12"
+  version          = "1.35.13"
   count            = local.create_cbr_rule ? 1 : 0
   rule_description = "CBR rule for COS"
   enforcement_mode = var.enforcement_mode
