@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
 )
 
@@ -63,6 +64,22 @@ func TestRunFullyConfigurableUpgrade(t *testing.T) {
 		TemplateFolder:         fullyConfigFlavorDir,
 		DeleteWorkspaceOnFail:  false,
 		WaitJobCompleteMinutes: 120,
+
+		// The terraform-ibm-modules/cos/ibm module bump (v10.9.9 -> v10.17.4)
+		// changed the count expression on random_string.bucket_name_suffix
+		// from unconditional to `add_bucket_name_suffix && create_cos_bucket`.
+		// This DA always sets create_cos_bucket = false, so upgrading destroys
+		// this orphaned, harmless resource (it only ever fed a bucket name
+		// suffix at create time; the bucket name is already fixed in state).
+		// This is expected and safe, so exempt it from the upgrade
+		// consistency check rather than fighting Terraform with a `removed`
+		// block (which doesn't apply here, since the resource is still
+		// declared upstream in the vendored module, just with count=0).
+		IgnoreDestroys: testhelper.Exemptions{
+			List: []string{
+				"module.cos.random_string.bucket_name_suffix",
+			},
+		},
 	})
 
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{

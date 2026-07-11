@@ -356,26 +356,3 @@ module "cbr_rule" {
     module.kms
   ]
 }
-
-##############################################################################
-# State migration: remove orphaned resource from module.cos on upgrade
-#
-# When upgrading from terraform-ibm-modules/cos/ibm v10.9.9 → v10.17.4 the
-# count expression for random_string.bucket_name_suffix inside the cos module
-# changed from:
-#   count = var.add_bucket_name_suffix ? 1 : 0
-# to:
-#   count = var.add_bucket_name_suffix && var.create_cos_bucket ? 1 : 0
-#
-# Because this DA always passes create_cos_bucket = false the resource no
-# longer exists in v10.17.4. Without this block Terraform plans a destroy of
-# the previously-created instance, which breaks the upgrade test.
-# destroy = false drops it from state without actually destroying it.
-##############################################################################
-removed {
-  from = module.cos.random_string.bucket_name_suffix
-
-  lifecycle {
-    destroy = false
-  }
-}
