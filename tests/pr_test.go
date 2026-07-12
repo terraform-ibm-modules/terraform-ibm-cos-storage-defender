@@ -77,7 +77,7 @@ func TestRunFullyConfigurableUpgrade(t *testing.T) {
 		// declared upstream in the vendored module, just with count=0).
 		IgnoreDestroys: testhelper.Exemptions{
 			List: []string{
-				"module.cos.random_string.bucket_name_suffix",
+				"module.cos.random_string.bucket_name_suffix[0]",
 			},
 		},
 	})
