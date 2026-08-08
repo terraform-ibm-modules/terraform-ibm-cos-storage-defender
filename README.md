@@ -65,7 +65,7 @@ Ensure that the API key or IAM identity used has sufficient access to all these 
 | <a name="module_cos"></a> [cos](#module\_cos) | terraform-ibm-modules/cos/ibm | 10.17.6 |
 | <a name="module_cos_buckets"></a> [cos\_buckets](#module\_cos\_buckets) | terraform-ibm-modules/cos/ibm//modules/buckets | 10.17.6 |
 | <a name="module_key"></a> [key](#module\_key) | terraform-ibm-modules/kms-key/ibm | 1.5.0 |
-| <a name="module_kms"></a> [kms](#module\_kms) | terraform-ibm-modules/key-protect/ibm | 2.13.5 |
+| <a name="module_kms"></a> [kms](#module\_kms) | terraform-ibm-modules/key-protect/ibm | 2.13.6 |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform-ibm-modules/resource-group/ibm | 1.6.1 |
 
 ### Resources
