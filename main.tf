@@ -216,7 +216,7 @@ resource "ibm_iam_authorization_policy" "cos_policy" {
 
 module "cloud_logs" {
   source                        = "terraform-ibm-modules/cloud-logs/ibm"
-  version                       = "1.15.5"
+  version                       = "1.15.6"
   depends_on                    = [ibm_iam_authorization_policy.cos_policy]
   instance_name                 = local.cloud_log_instance_name
   plan                          = var.cloud_logs_plan
