@@ -51,17 +51,17 @@ Ensure that the API key or IAM identity used has sufficient access to all these 
 ### Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.71.2, < 2.0.0 |
 
 ### Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_cbr_rule"></a> [cbr\_rule](#module\_cbr\_rule) | terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module | 1.36.9 |
 | <a name="module_cbr_zone"></a> [cbr\_zone](#module\_cbr\_zone) | terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module | 1.36.9 |
-| <a name="module_cloud_logs"></a> [cloud\_logs](#module\_cloud\_logs) | terraform-ibm-modules/cloud-logs/ibm | 2.0.0 |
+| <a name="module_cloud_logs"></a> [cloud\_logs](#module\_cloud\_logs) | terraform-ibm-modules/cloud-logs/ibm | 2.1.0 |
 | <a name="module_cos"></a> [cos](#module\_cos) | terraform-ibm-modules/cos/ibm | 11.0.0 |
 | <a name="module_cos_buckets"></a> [cos\_buckets](#module\_cos\_buckets) | terraform-ibm-modules/cos/ibm//modules/buckets | 11.0.0 |
 | <a name="module_key"></a> [key](#module\_key) | terraform-ibm-modules/kms-key/ibm | 1.5.0 |
@@ -71,7 +71,7 @@ Ensure that the API key or IAM identity used has sufficient access to all these 
 ### Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [ibm_iam_authorization_policy.cos_policy](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/iam_authorization_policy) | resource |
 | [ibm_iam_authorization_policy.cos_to_kms](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/iam_authorization_policy) | resource |
 | [ibm_iam_account_settings.iam_account_settings](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/data-sources/iam_account_settings) | data source |
@@ -79,7 +79,7 @@ Ensure that the API key or IAM identity used has sufficient access to all these 
 ### Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_allowed_ip_addresses"></a> [allowed\_ip\_addresses](#input\_allowed\_ip\_addresses) | List of allowed IPv4 addresses. This will restrict access to the bucket from only specifically allowed IP addresses. Entering values in this field will result in the creation of a new network zone. | `list(string)` | `null` | no |
 | <a name="input_allowed_network"></a> [allowed\_network](#input\_allowed\_network) | Allowed networks for the Key Protect instance. Possible values: 'private-only', 'public-and-private'. | `string` | `"private-only"` | no |
 | <a name="input_allowed_network_zone_name"></a> [allowed\_network\_zone\_name](#input\_allowed\_network\_zone\_name) | Name used for new network zone created if values are entered in the allowed\_ip\_addresses, allowed\_vpc, or allowed\_vpc\_crns fields | `string` | `"cyber-zone"` | no |
@@ -115,7 +115,7 @@ Ensure that the API key or IAM identity used has sufficient access to all these 
 ### Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_cos_instance_id"></a> [cos\_instance\_id](#output\_cos\_instance\_id) | The ID of the COS instance. |
 | <a name="output_credentials_json"></a> [credentials\_json](#output\_credentials\_json) | The HMAC credentials JSON for the COS instance. |
 | <a name="output_cybervault_bucket_endpoint"></a> [cybervault\_bucket\_endpoint](#output\_cybervault\_bucket\_endpoint) | The direct S3 endpoint of the Cybervault COS bucket. |
