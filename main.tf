@@ -23,7 +23,7 @@ locals {
 
 module "cos" {
   source              = "terraform-ibm-modules/cos/ibm"
-  version             = "11.1.1"
+  version             = "11.1.2"
   cos_instance_name   = local.cos_instance_name
   cos_plan            = local.cos_plan
   create_cos_instance = true
@@ -57,7 +57,7 @@ locals {
 
 module "kms" {
   source            = "terraform-ibm-modules/key-protect/ibm"
-  version           = "2.13.8"
+  version           = "2.13.9"
   key_protect_name  = local.key_protect_name
   region            = var.region
   resource_group_id = module.resource_group.resource_group_id
@@ -135,7 +135,7 @@ locals {
 
 module "cos_buckets" {
   source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
-  version = "11.1.1"
+  version = "11.1.2"
 
   for_each = local.bucket_definitions
 
