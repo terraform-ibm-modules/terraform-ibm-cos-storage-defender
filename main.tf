@@ -23,7 +23,7 @@ locals {
 
 module "cos" {
   source              = "terraform-ibm-modules/cos/ibm"
-  version             = "11.1.3"
+  version             = "11.1.4"
   cos_instance_name   = local.cos_instance_name
   cos_plan            = local.cos_plan
   create_cos_instance = true
@@ -135,7 +135,7 @@ locals {
 
 module "cos_buckets" {
   source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
-  version = "11.1.3"
+  version = "11.1.4"
 
   for_each = local.bucket_definitions
 
@@ -216,7 +216,7 @@ resource "ibm_iam_authorization_policy" "cos_policy" {
 
 module "cloud_logs" {
   source                        = "terraform-ibm-modules/cloud-logs/ibm"
-  version                       = "2.1.4"
+  version                       = "2.1.5"
   depends_on                    = [ibm_iam_authorization_policy.cos_policy]
   instance_name                 = local.cloud_log_instance_name
   plan                          = var.cloud_logs_plan
