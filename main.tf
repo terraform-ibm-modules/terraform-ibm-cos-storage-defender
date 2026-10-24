@@ -23,7 +23,7 @@ locals {
 
 module "cos" {
   source              = "terraform-ibm-modules/cos/ibm"
-  version             = "11.1.4"
+  version             = "11.1.5"
   cos_instance_name   = local.cos_instance_name
   cos_plan            = local.cos_plan
   create_cos_instance = true
@@ -135,7 +135,7 @@ locals {
 
 module "cos_buckets" {
   source  = "terraform-ibm-modules/cos/ibm//modules/buckets"
-  version = "11.1.4"
+  version = "11.1.5"
 
   for_each = local.bucket_definitions
 
