@@ -59,13 +59,13 @@ Ensure that the API key or IAM identity used has sufficient access to all these 
 
 | Name | Source | Version |
 | ---- | ------ | ------- |
-| <a name="module_cbr_rule"></a> [cbr\_rule](#module\_cbr\_rule) | terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module | 1.37.3 |
-| <a name="module_cbr_zone"></a> [cbr\_zone](#module\_cbr\_zone) | terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module | 1.37.3 |
+| <a name="module_cbr_rule"></a> [cbr\_rule](#module\_cbr\_rule) | terraform-ibm-modules/cbr/ibm//modules/cbr-rule-module | 1.37.4 |
+| <a name="module_cbr_zone"></a> [cbr\_zone](#module\_cbr\_zone) | terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module | 1.37.4 |
 | <a name="module_cloud_logs"></a> [cloud\_logs](#module\_cloud\_logs) | terraform-ibm-modules/cloud-logs/ibm | 2.1.9 |
-| <a name="module_cos"></a> [cos](#module\_cos) | terraform-ibm-modules/cos/ibm | 11.2.1 |
-| <a name="module_cos_buckets"></a> [cos\_buckets](#module\_cos\_buckets) | terraform-ibm-modules/cos/ibm//modules/buckets | 11.2.1 |
+| <a name="module_cos"></a> [cos](#module\_cos) | terraform-ibm-modules/cos/ibm | 11.2.2 |
+| <a name="module_cos_buckets"></a> [cos\_buckets](#module\_cos\_buckets) | terraform-ibm-modules/cos/ibm//modules/buckets | 11.2.2 |
 | <a name="module_key"></a> [key](#module\_key) | terraform-ibm-modules/kms-key/ibm | 1.5.0 |
-| <a name="module_kms"></a> [kms](#module\_kms) | terraform-ibm-modules/key-protect/ibm | 2.13.9 |
+| <a name="module_kms"></a> [kms](#module\_kms) | terraform-ibm-modules/key-protect/ibm | 2.13.10 |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform-ibm-modules/resource-group/ibm | 1.6.1 |
 
 ### Resources
